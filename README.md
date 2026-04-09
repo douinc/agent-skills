@@ -1,8 +1,11 @@
 # Agent Skills
 
-AI 에이전트를 위한 스킬 모음입니다.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Skills](https://img.shields.io/badge/npx-skills-blue)](https://www.npmjs.com/package/skills)
 
-## 설치
+> AI 에이전트를 위한 스킬 모음 — Agent skills for Claude Code, Copilot CLI, Codex, and Gemini CLI.
+
+## 설치 / Installation
 
 ### Claude Code
 
@@ -14,7 +17,7 @@ npx skills add douinc/agent-skills@<skill-name>
 
 [Claude Code 플러그인 설치 가이드](https://docs.anthropic.com/en/docs/claude-code/skills) 참고
 
-## 스킬 목록
+## 스킬 목록 / Available Skills
 
 ### UX Writing
 
@@ -22,7 +25,7 @@ npx skills add douinc/agent-skills@<skill-name>
 | ---- | ---- | ---- |
 | [ux-writing-korean](./skills/ux-writing-korean/) | 한국어 UX 라이팅 가이드 (해요체, 능동형, 긍정형, 캐주얼 경어, 명사 조합 회피) | `npx skills add douinc/agent-skills@ux-writing-korean` |
 
-## 새 스킬 만들기
+## 새 스킬 만들기 / Contributing
 
 1. `template/SKILL.md`를 참고하여 새 스킬을 만듭니다
 2. `skills/<skill-name>/SKILL.md` 경로에 파일을 생성합니다
@@ -44,6 +47,6 @@ metadata:
 스킬 지침을 여기에 작성합니다.
 ```
 
-## 라이선스
+## 라이선스 / License
 
-MIT
+[MIT](./LICENSE)
