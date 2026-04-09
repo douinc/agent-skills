@@ -1,0 +1,20 @@
+{
+  "name": "douinc-agent-skills",
+  "owner": {
+    "name": "donny-son",
+    "email": "d@dou.so"
+  },
+  "metadata": {
+    "description": "AI 에이전트를 위한 스킬 모음",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "ux-writing",
+      "description": "UX 한국어 라이팅 관련 스킬 모음",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/ux-writing-korean"]
+    }
+  ]
+}
