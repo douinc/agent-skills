@@ -46,4 +46,4 @@ metadata:
 
 ## 라이선스
 
-Apache 2.0
+MIT
