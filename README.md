@@ -2,8 +2,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Skills](https://img.shields.io/badge/npx-skills-blue)](https://www.npmjs.com/package/skills)
+[![Figma](https://img.shields.io/badge/Figma-Skills-F24E1E?logo=figma&logoColor=white)](./skills/)
 
 > AI 에이전트를 위한 스킬 모음 — Agent skills for Claude Code, Copilot CLI, Codex, and Gemini CLI.
+> Includes Figma MCP integration skills for icons (Iconify) and logos (SVGL).
 
 ## 설치 / Installation
 
