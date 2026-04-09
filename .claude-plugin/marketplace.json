@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "ux-writing",
+      "name": "ux-writing-korean",
       "description": "UX 한국어 라이팅 관련 스킬 모음",
       "source": "./",
       "strict": false,
