@@ -25,6 +25,13 @@ npx skills add douinc/agent-skills@<skill-name>
 | ---- | ---- | ---- |
 | [ux-writing-korean](./skills/ux-writing-korean/) | 한국어 UX 라이팅 가이드 (해요체, 능동형, 긍정형, 캐주얼 경어, 명사 조합 회피) | `npx skills add douinc/agent-skills@ux-writing-korean` |
 
+### Figma / Icons
+
+| 스킬 | 설명 | 설치 |
+| ---- | ---- | ---- |
+| [figma-icons-iconify](./skills/figma-icons-iconify/) | Fetch real SVG icons from Iconify API for Figma designs (supports Tabler, Lucide, Material Design, and 150+ icon sets) | `npx skills add douinc/agent-skills@figma-icons-iconify` |
+| [figma-logos-svgl](./skills/figma-logos-svgl/) | Fetch real SVG brand/product logos from SVGL API for Figma designs (React, Vercel, Stripe, GitHub, and 500+ brands) | `npx skills add douinc/agent-skills@figma-logos-svgl` |
+
 ## 새 스킬 만들기 / Contributing
 
 1. `template/SKILL.md`를 참고하여 새 스킬을 만듭니다

@@ -15,6 +15,20 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/ux-writing-korean"]
+    },
+    {
+      "name": "figma-icons-iconify",
+      "description": "Fetch and insert real SVG icons from Iconify API into Figma designs",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/figma-icons-iconify"]
+    },
+    {
+      "name": "figma-logos-svgl",
+      "description": "Fetch and insert real SVG brand logos from SVGL API into Figma designs",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/figma-logos-svgl"]
     }
   ]
 }
