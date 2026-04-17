@@ -1,6 +1,6 @@
 ---
 name: onboarding-design
-description: Use when designing or auditing product onboarding screens.
+description: Use when designing, reviewing, or auditing signup flows, goal-selection quizzes, permission prompts, paywalls, or any screen a user sees before their first meaningful action.
 ---
 
 # Onboarding Design
