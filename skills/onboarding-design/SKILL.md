@@ -1,6 +1,6 @@
 ---
 name: onboarding-design
-description: Use when designing or auditing onboarding screens — from first app launch through the user's first aha moment.
+description: Use when designing or auditing product onboarding screens.
 ---
 
 # Onboarding Design
