@@ -1,11 +1,25 @@
 ---
 name: onboarding-design
-description: Use when designing, implementing, or auditing product onboarding flows — signup screens, personalization quizzes, paywalls, permission prompts, or any screen between first launch and the user's aha moment.
+description: Use when designing or auditing onboarding screens — from first app launch through the user's first aha moment.
 ---
 
 # Onboarding Design
 
+## Overview
+
 Onboarding is the product's job interview. Focus every decision on the shortest path to the **aha moment**: the first instant the user *feels* the core value personally.
+
+## When to Use
+
+**Use when:**
+- Designing or reviewing signup flows, welcome screens, or goal-selection quizzes
+- Auditing permission prompt placement or copy
+- Building or optimizing a paywall within an onboarding sequence
+- Evaluating any screen between first launch and the user's first meaningful action
+
+**Not for:**
+- Post-onboarding retention or engagement loops
+- General UX copywriting outside the onboarding context
 
 ## Core Principles
 
@@ -22,6 +36,8 @@ Never list features. Show what the user's life looks like after using the produc
 Every headline must describe a user outcome, not a product capability.
 
 ### 2. Drive to the Aha Moment
+
+Identify your product's aha moment first. Every screen audit should start with this answer.
 
 Map every screen between signup and the aha moment. Delete anything that doesn't move the user closer to it.
 
@@ -107,6 +123,7 @@ After the quiz, make personalization feel tangible before revealing the paywall:
 - [ ] Every native permission has a pre-permission screen first
 - [ ] Goal/intent questions allow multiple selections
 - [ ] The paywall references the user's specific quiz answer
+- [ ] An unlock value animation appears between quiz and paywall
 - [ ] At least one screen has a human touch element
 
 ## Common Mistakes
@@ -119,9 +136,4 @@ After the quiz, make personalization feel tangible before revealing the paywall:
 | Generic paywall copy | Reference quiz answers in headline |
 | Progress bar showing steps remaining | Show steps completed |
 | Long form before any value | Deliver one value moment before data collection |
-
-## Related Skills
-
-- `user-onboarding` — Strategic principles and aha moment frameworks
-- `behavioral-product-design` — Psychological patterns in product design
-- `retention-engagement` — Post-onboarding engagement loops
+| Quiz results shown directly as paywall | Add unlock value animation between quiz and paywall |
