@@ -3,7 +3,7 @@ name: figma-logos-svgl
 description: Use when working with Figma and brand or product logos are needed — triggers on brand names (React, Next.js, Vercel, Stripe, GitHub), company logos, or requests to add/insert logos in Figma designs.
 metadata:
   author: initred
-  email: initred@gmail.com
+  email: initred@dou.so
   version: "1.0.0"
 ---
 
@@ -30,15 +30,20 @@ curl -s "https://api.svgl.app?search={name}"
 ```
 
 **Example:**
+
 ```bash
 curl -s "https://api.svgl.app?search=react"
 ```
 
 This returns a JSON array. Each item has a `route` field which is either:
+
 - **A string** — single SVG URL (e.g., `"https://svgl.app/library/preact.svg"`)
 - **A theme object** — with `light` and `dark` variants:
   ```json
-  { "light": "https://svgl.app/library/react_light.svg", "dark": "https://svgl.app/library/react_dark.svg" }
+  {
+    "light": "https://svgl.app/library/react_light.svg",
+    "dark": "https://svgl.app/library/react_dark.svg"
+  }
   ```
 
 Pick the matching result by `title`, then choose the appropriate variant (light/dark) based on the design context.
@@ -54,6 +59,7 @@ curl -s "https://svgl.app/library/{filename}.svg"
 ```
 
 **Example:**
+
 ```bash
 curl -s "https://svgl.app/library/react_dark.svg"
 ```
@@ -89,12 +95,12 @@ return { createdNodeIds: [node.id] };
 
 ## API Endpoints
 
-| Endpoint | Description | Example |
-|----------|-------------|---------|
-| `https://api.svgl.app?search={query}` | Search logos by name | `?search=vercel` |
-| `https://api.svgl.app?limit={n}` | Get all logos with limit | `?limit=10` |
-| `https://api.svgl.app/category/{name}` | Get logos by category | `/category/software` |
-| `https://api.svgl.app/categories` | List all categories | — |
+| Endpoint                               | Description              | Example              |
+| -------------------------------------- | ------------------------ | -------------------- |
+| `https://api.svgl.app?search={query}`  | Search logos by name     | `?search=vercel`     |
+| `https://api.svgl.app?limit={n}`       | Get all logos with limit | `?limit=10`          |
+| `https://api.svgl.app/category/{name}` | Get logos by category    | `/category/software` |
+| `https://api.svgl.app/categories`      | List all categories      | —                    |
 
 ## Handling Light/Dark Variants
 
@@ -121,7 +127,10 @@ Some logos also have wordmark versions (logo with text). These are in the `wordm
 {
   "title": "React",
   "route": { "light": "...react_light.svg", "dark": "...react_dark.svg" },
-  "wordmark": { "light": "...react-wordmark-light.svg", "dark": "...react-wordmark-dark.svg" }
+  "wordmark": {
+    "light": "...react-wordmark-light.svg",
+    "dark": "...react-wordmark-dark.svg"
+  }
 }
 ```
 
@@ -136,10 +145,10 @@ const logoNode = figma.getNodeById("LOGO_NODE_ID");
 
 function recolor(node, color) {
   if ("fills" in node && node.fills.length > 0) {
-    node.fills = [{ type: 'SOLID', color }];
+    node.fills = [{ type: "SOLID", color }];
   }
   if ("strokes" in node && node.strokes.length > 0) {
-    node.strokes = [{ type: 'SOLID', color }];
+    node.strokes = [{ type: "SOLID", color }];
   }
   if ("children" in node) {
     for (const child of node.children) {

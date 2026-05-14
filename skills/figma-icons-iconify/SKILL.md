@@ -3,7 +3,7 @@ name: figma-icons-iconify
 description: Use when working with Figma and UI icons are needed — triggers on icon names, icon libraries (Tabler, Lucide, Material Design, Phosphor, Heroicons), or requests to add/insert icons in Figma designs.
 metadata:
   author: initred
-  email: initred@gmail.com
+  email: initred@dou.so
   version: "1.0.0"
 ---
 
@@ -28,6 +28,7 @@ curl -s "https://api.iconify.design/{prefix}/{name}.svg"
 ```
 
 **Example:**
+
 ```bash
 curl -s "https://api.iconify.design/tabler/alert-circle.svg"
 ```
@@ -69,15 +70,16 @@ return { createdNodeIds: [node.id] };
 
 Customize the fetched SVG by appending query parameters:
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `color` | Set icon color (URL-encode `#`) | `?color=%23ff0000` |
-| `width` | Icon width in pixels | `?width=32` |
-| `height` | Icon height in pixels | `?height=32` |
-| `flip` | Flip direction | `?flip=horizontal` |
-| `rotate` | Rotation angle | `?rotate=90deg` |
+| Parameter | Description                     | Example            |
+| --------- | ------------------------------- | ------------------ |
+| `color`   | Set icon color (URL-encode `#`) | `?color=%23ff0000` |
+| `width`   | Icon width in pixels            | `?width=32`        |
+| `height`  | Icon height in pixels           | `?height=32`       |
+| `flip`    | Flip direction                  | `?flip=horizontal` |
+| `rotate`  | Rotation angle                  | `?rotate=90deg`    |
 
 **Example with parameters:**
+
 ```
 https://api.iconify.design/tabler/alert-circle.svg?width=24&height=24&color=%230f172a
 ```
@@ -91,14 +93,20 @@ curl -s "https://api.iconify.design/search?query={term}&prefixes={prefix}&limit=
 ```
 
 **Example:**
+
 ```bash
 curl -s "https://api.iconify.design/search?query=alert&prefixes=tabler&limit=10"
 ```
 
 This returns JSON with matching icon names:
+
 ```json
 {
-  "icons": ["tabler:alert-circle", "tabler:alert-triangle", "tabler:alert-octagon"],
+  "icons": [
+    "tabler:alert-circle",
+    "tabler:alert-triangle",
+    "tabler:alert-octagon"
+  ],
   "total": 15
 }
 ```
@@ -114,11 +122,13 @@ curl -s "https://api.iconify.design/{prefix}.json?icons={name1},{name2},{name3}"
 ```
 
 **Example:**
+
 ```bash
 curl -s "https://api.iconify.design/tabler.json?icons=alert-circle,home,settings"
 ```
 
 This returns structured data:
+
 ```json
 {
   "prefix": "tabler",
@@ -133,6 +143,7 @@ This returns structured data:
 ```
 
 To use each icon, extract the data and wrap the `body` in an SVG element:
+
 ```js
 // Extract icon data from the JSON response
 const icon = response.icons["alert-circle"];
@@ -148,16 +159,16 @@ const node = figma.createNodeFromSvg(svgString);
 
 ## Common Icon Set Prefixes
 
-| Prefix | Icon Set | Style | Default Attributes |
-|--------|----------|-------|-------------------|
-| `tabler` | Tabler Icons | Stroke | `stroke="currentColor" stroke-width="2"` |
-| `lucide` | Lucide | Stroke | `stroke="currentColor" stroke-width="2"` |
-| `mdi` | Material Design Icons | Fill | `fill="currentColor"` |
-| `ph` | Phosphor Icons | Stroke/Fill | varies by weight |
-| `ri` | Remix Icon | Fill | `fill="currentColor"` |
-| `heroicons` | Heroicons | Stroke | `stroke="currentColor" stroke-width="1.5"` |
-| `solar` | Solar Icons | Stroke/Fill | varies by style |
-| `iconamoon` | IconaMoon | Stroke | `stroke="currentColor"` |
+| Prefix      | Icon Set              | Style       | Default Attributes                         |
+| ----------- | --------------------- | ----------- | ------------------------------------------ |
+| `tabler`    | Tabler Icons          | Stroke      | `stroke="currentColor" stroke-width="2"`   |
+| `lucide`    | Lucide                | Stroke      | `stroke="currentColor" stroke-width="2"`   |
+| `mdi`       | Material Design Icons | Fill        | `fill="currentColor"`                      |
+| `ph`        | Phosphor Icons        | Stroke/Fill | varies by weight                           |
+| `ri`        | Remix Icon            | Fill        | `fill="currentColor"`                      |
+| `heroicons` | Heroicons             | Stroke      | `stroke="currentColor" stroke-width="1.5"` |
+| `solar`     | Solar Icons           | Stroke/Fill | varies by style                            |
+| `iconamoon` | IconaMoon             | Stroke      | `stroke="currentColor"`                    |
 
 ## Recoloring After Insertion
 
@@ -168,10 +179,10 @@ const iconNode = figma.getNodeById("ICON_NODE_ID");
 
 function recolor(node, color) {
   if ("fills" in node && node.fills.length > 0) {
-    node.fills = [{ type: 'SOLID', color }];
+    node.fills = [{ type: "SOLID", color }];
   }
   if ("strokes" in node && node.strokes.length > 0) {
-    node.strokes = [{ type: 'SOLID', color }];
+    node.strokes = [{ type: "SOLID", color }];
   }
   if ("children" in node) {
     for (const child of node.children) {

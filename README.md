@@ -27,6 +27,12 @@ npx skills add douinc/agent-skills@<skill-name>
 | ---- | ---- | ---- |
 | [ux-writing-korean](./skills/ux-writing-korean/) | 한국어 UX 라이팅 가이드 (해요체, 능동형, 긍정형, 캐주얼 경어, 명사 조합 회피) | `npx skills add douinc/agent-skills@ux-writing-korean` |
 
+### Design
+
+| 스킬 | 설명 | 설치 |
+| ---- | ---- | ---- |
+| [onboarding-design](./skills/onboarding-design/) | 회원가입 플로우, 목표 선택 퀴즈, 권한 요청 화면, 페이월 등 사용자의 첫 번째 의미 있는 행동 이전 화면을 설계·검토할 때 사용 | `npx skills add douinc/agent-skills@onboarding-design` |
+
 ### Figma / Icons
 
 | 스킬 | 설명 | 설치 |
