@@ -40,6 +40,12 @@ npx skills add douinc/agent-skills@<skill-name>
 | [figma-icons-iconify](./skills/figma-icons-iconify/) | Fetch real SVG icons from Iconify API for Figma designs (supports Tabler, Lucide, Material Design, and 150+ icon sets) | `npx skills add douinc/agent-skills@figma-icons-iconify` |
 | [figma-logos-svgl](./skills/figma-logos-svgl/) | Fetch real SVG brand/product logos from SVGL API for Figma designs (React, Vercel, Stripe, GitHub, and 500+ brands) | `npx skills add douinc/agent-skills@figma-logos-svgl` |
 
+### Documentation
+
+| 스킬 | 설명 | 설치 |
+| ---- | ---- | ---- |
+| [writing-project-readme](./skills/writing-project-readme/) | 명시적으로 호출했을 때만 동작하는 커맨드형 스킬. 비개발자(PM/디자인/운영)도 읽을 수 있는 종합 README를 처음부터 다시 작성 | `npx skills add douinc/agent-skills@writing-project-readme` |
+
 ## 새 스킬 만들기 / Contributing
 
 1. `template/SKILL.md`를 참고하여 새 스킬을 만듭니다

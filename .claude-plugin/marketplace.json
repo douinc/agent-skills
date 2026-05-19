@@ -29,6 +29,13 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/figma-logos-svgl"]
+    },
+    {
+      "name": "writing-project-readme",
+      "description": "Write or fully rewrite a project README that covers tech stack, architecture, features, and service description — readable by both non-engineers and developers",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/writing-project-readme"]
     }
   ]
 }
