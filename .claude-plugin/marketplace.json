@@ -36,6 +36,20 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/writing-project-readme"]
+    },
+    {
+      "name": "onboarding-design",
+      "description": "회원가입 플로우, 목표 선택 퀴즈, 권한 요청 화면, 페이월 등 사용자의 첫 번째 의미 있는 행동 이전 화면을 설계·검토할 때 사용",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/onboarding-design"]
+    },
+    {
+      "name": "design-md-to-shadcn",
+      "description": "Apply an external DESIGN.md (Google Labs design-token format) to a project's shadcn/ui theme",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/design-md-to-shadcn"]
     }
   ]
 }
