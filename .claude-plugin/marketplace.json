@@ -52,6 +52,13 @@
       "skills": ["./skills/design-md-to-shadcn"]
     },
     {
+      "name": "dou-product-design",
+      "description": "Next.js + shadcn/ui 기반 Dou 제품 화면 설계·구현 공통 워크플로우",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/dou-product-design"]
+    },
+    {
       "name": "langfuse-laravel-ai",
       "description": "Connect Langfuse tracing to a Laravel app using the laravel/ai SDK via axyr/laravel-langfuse auto-instrumentation plus trace context enrichment (session/user/metadata)",
       "source": "./",

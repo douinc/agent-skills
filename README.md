@@ -33,6 +33,7 @@ npx skills add douinc/agent-skills@<skill-name>
 | ---- | ---- | ---- |
 | [onboarding-design](./skills/onboarding-design/) | 회원가입 플로우, 목표 선택 퀴즈, 권한 요청 화면, 페이월 등 사용자의 첫 번째 의미 있는 행동 이전 화면을 설계·검토할 때 사용 | `npx skills add douinc/agent-skills@onboarding-design` |
 | [design-md-to-shadcn](./skills/design-md-to-shadcn/) | 외부 DESIGN.md(Google Labs 디자인 토큰 포맷)를 shadcn/ui 테마의 CSS 변수로 변환·적용 | `npx skills add douinc/agent-skills@design-md-to-shadcn` |
+| [dou-product-design](./skills/dou-product-design/) | Next.js + shadcn/ui 기반 Dou 제품 화면 설계·구현 공통 워크플로우 | `npx skills add douinc/agent-skills@dou-product-design` |
 
 ### Figma / Icons
 
