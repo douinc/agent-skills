@@ -50,6 +50,13 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/design-md-to-shadcn"]
+    },
+    {
+      "name": "langfuse-laravel-ai",
+      "description": "Connect Langfuse tracing to a Laravel app using the laravel/ai SDK via axyr/laravel-langfuse auto-instrumentation plus trace context enrichment (session/user/metadata)",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/langfuse-laravel-ai"]
     }
   ]
 }

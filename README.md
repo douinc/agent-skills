@@ -47,6 +47,12 @@ npx skills add douinc/agent-skills@<skill-name>
 | ---- | ---- | ---- |
 | [writing-project-readme](./skills/writing-project-readme/) | 명시적으로 호출했을 때만 동작하는 커맨드형 스킬. 비개발자(PM/디자인/운영)도 읽을 수 있는 종합 README를 처음부터 다시 작성 | `npx skills add douinc/agent-skills@writing-project-readme` |
 
+### Observability
+
+| 스킬 | 설명 | 설치 |
+| ---- | ---- | ---- |
+| [langfuse-laravel-ai](./skills/langfuse-laravel-ai/) | `laravel/ai` SDK를 쓰는 Laravel 앱에 Langfuse 트레이싱 연결. `axyr/laravel-langfuse` 자동계측 + trace 컨텍스트(session/user/메타데이터) 보강 | `npx skills add douinc/agent-skills@langfuse-laravel-ai` |
+
 ## 새 스킬 만들기 / Contributing
 
 1. `template/SKILL.md`를 참고하여 새 스킬을 만듭니다
