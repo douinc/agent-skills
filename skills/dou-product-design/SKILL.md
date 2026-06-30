@@ -1,6 +1,8 @@
 ---
 name: dou-product-design
 description: Use when designing or implementing screens for any Dou product Next.js prototype (Next.js + shadcn/ui stack). Covers the full spec-wireframe-implement workflow for product design prototypes.
+author: minsu
+email: minsu@dou.so
 version: 1.2.0
 ---
 
