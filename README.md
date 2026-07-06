@@ -11,8 +11,56 @@
 
 ### Claude Code
 
+`npx skills` CLI를 사용해 원하는 스킬을 설치합니다.
+
 ```bash
 npx skills add douinc/agent-skills@<skill-name>
+```
+
+예:
+
+```bash
+npx skills add douinc/agent-skills@ux-writing-korean
+```
+
+### Codex
+
+Codex는 Open Agent Skills 형식의 `SKILL.md`를 읽을 수 있습니다. 원하는 스킬을 Codex 사용자 스킬 경로에 복사하면 모든 Codex 작업에서 사용할 수 있습니다.
+
+```bash
+git clone https://github.com/douinc/agent-skills.git
+cd agent-skills
+mkdir -p ~/.agents/skills
+cp -R skills/<skill-name> ~/.agents/skills/
+```
+
+예:
+
+```bash
+cp -R skills/ux-writing-korean ~/.agents/skills/
+```
+
+설치 후 Codex에서 `$<skill-name>`으로 명시적으로 호출하거나, 스킬의 `description`과 맞는 작업을 요청하면 자동으로 사용할 수 있습니다. 새 스킬이 보이지 않으면 Codex를 재시작하세요.
+
+### Global install
+
+이미 이 저장소를 클론한 상태라면, Claude Code와 Codex에 같은 스킬을 전역 설치할 수 있습니다.
+
+```bash
+# Claude Code global
+mkdir -p ~/.claude/skills
+cp -R skills/<skill-name> ~/.claude/skills/
+
+# Codex global
+mkdir -p ~/.agents/skills
+cp -R skills/<skill-name> ~/.agents/skills/
+```
+
+전체 스킬을 한 번에 설치하려면 `<skill-name>` 대신 `*`를 사용합니다.
+
+```bash
+cp -R skills/* ~/.claude/skills/
+cp -R skills/* ~/.agents/skills/
 ```
 
 ### Claude.ai / Claude API
