@@ -3,12 +3,21 @@ name: dou-product-design
 description: Use when designing or implementing screens for any Dou product Next.js prototype (Next.js + shadcn/ui stack). Covers the full spec-wireframe-implement workflow for product design prototypes.
 author: minsu
 email: minsu@dou.so
-version: 1.3.0
+version: 1.4.0
 ---
 
 # Dou Product Design Workflow
 
 Next.js + shadcn/ui 기반 Dou 제품 디자인 프로토타입 공통 워크플로우.
+
+## ⓪ 정책 하네스 동기화 (모든 작업 전 필수)
+
+설계·구현 어느 단계든 **작업을 시작하기 전에**, 이 프로젝트의 `docs/design-harness.md`를 Read 도구로 읽는다.
+
+- **파일 있음** → 그 안의 소스 최신화 규칙(예: 기준 서비스 레포 `git pull --ff-only`)·정책 문서 참조·하네스 규칙을 그대로 따른다. pull이나 정책 읽기가 실패(로컬 변경·충돌·인증·네트워크)하면 낡은 소스로 작업하지 말고 중단·보고한다.
+- **파일 없음** → 이 제품의 기준 소스 레포·정책 문서 위치를 담당자에게 물어 `docs/design-harness.md` 생성을 제안한다. 임의로 만들지 않는다.
+
+> design-harness.md의 **내용(레포 경로·정책 위치)은 제품마다 다르며 각 제품 리포가 소유**한다. 이 스킬은 "각 프로젝트의 design-harness.md를 읽고 따른다"는 규칙만 강제한다. (제품 리포 `AGENTS.md`에도 같은 하네스 규칙이 자동 로드 컨텍스트로 실려 있을 수 있다.)
 
 ## 프로젝트 구조
 
@@ -67,6 +76,7 @@ flowchart TD
 모든 화면 작업은 이 순서를 따른다. 구현부터 시작하지 않는다.
 
 ```
+⓪ 정책 하네스 동기화 (작업 시작 전 · 재개 시에도 먼저)
 ① 스펙 정의
 ② 화면 설계 제안
 ③ 와이어프레임 HTML 작성
@@ -80,7 +90,7 @@ flowchart TD
 
 ### 작업 재개 시 — 현재 단계 파악 먼저
 
-신규 화면이 아니라 이어서 진행하는 경우, **반드시 먼저** `docs/screens/[페이지명].md`를 Read 도구로 읽어 현재 단계를 확인한다.
+재개 시에도 ⓪ 정책 하네스 동기화를 먼저 수행한 뒤, **반드시** `docs/screens/[페이지명].md`를 Read 도구로 읽어 현재 단계를 확인한다.
 
 | 문서 상태 | 재개 단계 |
 |-----------|-----------|
