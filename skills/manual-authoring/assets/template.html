@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>{{DOC_TITLE}}</title>
+<style>
+@page { size: A4; margin: 0; }
+
+  :root {
+    --ink: #16181d;
+    --ink-2: #3d434e;
+    --ink-3: #6b7280;
+    --line: #e5e7eb;
+    --line-soft: #f0f1f3;
+    --bg-soft: #f7f8fa;
+    --accent: #2563eb;
+    --accent-soft: #eef3ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    background: #fff;
+  }
+
+  .page {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
+    padding: 15mm 16mm 13mm;
+    display: flex;
+    flex-direction: column;
+    page-break-after: always;
+    overflow: hidden;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* ── 러닝 헤더 / 푸터 ─────────────────────────── */
+  .runhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 3mm;
+    border-bottom: 1px solid var(--line);
+    font-size: 10.5pt;
+    color: var(--ink-3);
+    letter-spacing: -0.01em;
+  }
+  .runhead strong { font-weight: 600; color: var(--ink-2); }
+
+  .runfoot {
+    margin-top: auto;
+    padding-top: 4mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 10pt;
+    color: var(--ink-3);
+  }
+  .folio { font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+  /* ── 섹션 타이틀 ─────────────────────────────── */
+  .chapter {
+    margin-top: 7mm;
+    font-size: 10.5pt;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .title-row {
+    margin-top: 2mm;
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+  }
+  .num {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 12mm;
+    height: 6.6mm;
+    padding: 0 2mm;
+    border-radius: 3.3mm;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12pt;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+  }
+  h2 {
+    font-size: 21pt;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .lead {
+    margin-top: 3mm;
+    font-size: 13pt;
+    line-height: 1.62;
+    color: var(--ink-2);
+    letter-spacing: -0.01em;
+    max-width: 155mm;
+  }
+  .lead code {
+    font-family: inherit;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ── 스크린샷 ────────────────────────────────── */
+  figure {
+    margin-top: 6mm;
+    border: 1px solid var(--line);
+    border-radius: 3mm;
+    background: var(--bg-soft);
+    padding: 3mm;
+    overflow: hidden;
+    flex: none; /* 고정 높이 flex 페이지에서 이미지가 세로로 압축·잘리지 않도록 */
+  }
+  figure img { display: block; width: 100%; border-radius: 1.6mm; }
+  figcaption {
+    margin-top: 2.5mm;
+    font-size: 10pt;
+    color: var(--ink-3);
+    text-align: center;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── 본문 블록 ───────────────────────────────── */
+  .body { margin-top: 7mm; }
+  .block + .block { margin-top: 5.5mm; padding-top: 5.5mm; border-top: 1px solid var(--line-soft); }
+
+  h3 {
+    font-size: 13.5pt;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: 2.5mm;
+  }
+
+  ol.steps { list-style: none; counter-reset: s; }
+  ol.steps > li {
+    counter-increment: s;
+    position: relative;
+    padding-left: 8mm;
+    font-size: 13pt;
+    line-height: 1.6;
+    color: var(--ink-2);
+    letter-spacing: -0.01em;
+  }
+  ol.steps > li + li { margin-top: 1.6mm; }
+  ol.steps > li::before {
+    content: counter(s);
+    position: absolute;
+    left: 0;
+    top: 0.7mm;
+    width: 5.4mm;
+    height: 5.4mm;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 9pt;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  ul.bul { list-style: none; }
+  ul.bul > li {
+    position: relative;
+    padding-left: 4.8mm;
+    font-size: 13pt;
+    line-height: 1.6;
+    color: var(--ink-2);
+    letter-spacing: -0.01em;
+  }
+  ul.bul > li + li { margin-top: 1.2mm; }
+  ul.bul > li::before {
+    content: "";
+    position: absolute;
+    left: 0.6mm;
+    top: 2.7mm;
+    width: 1.3mm;
+    height: 1.3mm;
+    border-radius: 50%;
+    background: #c3c8d0;
+  }
+
+  ol.steps ul.bul { margin-top: 1.2mm; }
+  ol.steps ul.bul > li { font-size: 12pt; color: var(--ink-3); }
+
+  .kbd {
+    display: inline-block;
+    padding: 0 1.2mm;
+    border: 1px solid var(--line);
+    border-radius: 1mm;
+    background: #fff;
+    font-size: 12pt;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .note {
+    margin-top: 5.5mm;
+    border-left: 2px solid var(--accent);
+    background: var(--bg-soft);
+    border-radius: 0 2mm 2mm 0;
+    padding: 3.5mm 4mm;
+  }
+  .note h3 { font-size: 12.5pt; margin-bottom: 1.8mm; color: var(--accent); }
+  .note ul.bul > li { font-size: 12.5pt; }
+  .note ul.bul > li::before { background: #a9b4c6; }
+
+  /* ── 2단 레이아웃(세로로 긴 스크린샷) ─────────── */
+  .split { display: grid; grid-template-columns: 80mm 1fr; gap: 8mm; margin-top: 6mm; align-items: start; }
+  .split .body { margin-top: 0; }
+  .split figure { margin-top: 0; }
+  .split figure img { max-height: 186mm; object-fit: contain; object-position: top; }
+
+  /* 세로로 긴 캡처는 윗부분만 잘라 보여준다 */
+  .split figure.shot-crop img,
+  .shot-crop img { max-height: 88mm; object-fit: contain; object-position: top; }
+
+  /* ── 표지 ────────────────────────────────────── */
+  .cover { justify-content: center; }
+  .cover .mark { height: 15mm; width: auto; display: block; align-self: flex-start; }
+  .runfoot .lettermark { height: 5mm; width: auto; display: inline-block; vertical-align: middle; opacity: 0.8; }
+  .cover h1 {
+    margin-top: 9mm;
+    font-size: 30pt;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.25;
+  }
+  .cover .sub { margin-top: 4mm; font-size: 12.5pt; color: var(--ink-3); letter-spacing: -0.01em; }
+  .cover .meta { margin-top: 3mm; font-size: 11pt; color: var(--ink-3); }
+
+  .toc { margin-top: 16mm; border-top: 1px solid var(--line); padding-top: 7mm; }
+  .toc h4 {
+    font-size: 10pt; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 5mm;
+  }
+  .toc-group + .toc-group { margin-top: 6mm; }
+  .toc-group > p {
+    font-size: 13.5pt; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 2.5mm;
+  }
+  .toc-row { display: flex; align-items: baseline; gap: 2.5mm; font-size: 12.5pt; color: var(--ink-2); }
+  .toc-row + .toc-row { margin-top: 1.6mm; }
+  .toc-row .id { flex: none; width: 9mm; color: var(--ink-3); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .toc-row .dots { flex: 1; border-bottom: 1px dotted #d5d9e0; transform: translateY(-1mm); }
+  .toc-row .pg { flex: none; font-variant-numeric: tabular-nums; color: var(--ink-3); }
+  .toc-row .new {
+    flex: none; font-size: 8.5pt; font-weight: 700; color: var(--accent);
+    background: var(--accent-soft); border-radius: 2mm; padding: 0.4mm 1.5mm;
+  }
+
+  /* ── 앱: 폰 스크린샷 ─────────────────────────── */
+  figure.shots { background: #fbfbfd; }
+  figure.shots img { width: auto; max-width: 100%; max-height: 88mm; margin: 0 auto; border-radius: 2mm; }
+  /* 폰 목업 여러 장: 이미지에 '명시적 높이 + flex 고정(shrink 없음)'을 줘서
+     세로가 확정되고 페이지·박스 밖으로 넘쳐 잘리는 일이 없게 함.
+     너비는 auto라 가로도 잘리지 않음. */
+  figure.shots.row4, figure.shots.row3, figure.shots.row2 {
+    display: flex; align-items: flex-start; flex-wrap: nowrap;
+  }
+  figure.shots.row4 img, figure.shots.row3 img, figure.shots.row2 img {
+    flex: 0 0 auto; width: auto; max-width: none; margin: 0;
+  }
+  /* 4장 — 4개가 폭을 넘겨 좌우가 잘리지 않도록 높이를 낮춰 폭 안에 맞춤 */
+  figure.shots.row4 { padding: 5mm 4mm; justify-content: center; gap: 3mm; }
+  figure.shots.row4 img { height: 82mm; }
+  /* 3장 */
+  figure.shots.row3 { padding: 5mm 6mm; justify-content: center; gap: 8mm; }
+  figure.shots.row3 img { height: 100mm; }
+  /* 2장 */
+  figure.shots.row2 { padding: 6mm 4mm; justify-content: center; gap: 10mm; }
+  figure.shots.row2 img { height: 108mm; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ 표지 (cover) ══════════════
+     로고: assets 로 받은 브랜드 로고 SVG를 img/ 에 넣고 참조.
+     레터마크(회사 로고)는 선택 — 필요 없으면 <span>회사명</span> 텍스트로 둬도 됨. -->
+<section class="page cover">
+  <img class="mark" src="img/brand-logo.svg" alt="{{BRAND}}" />
+  <h1>{{PRODUCT}}<br />사용자 매뉴얼</h1>
+  <p class="sub">{{SUBTITLE}}</p>
+  <p class="meta">{{VERSION_META}}</p>
+
+  <div class="toc">
+    <h4>목차</h4>
+    <div class="toc-group">
+      <p>1. {{대분류}}</p>
+      <div class="toc-row"><span class="id">1-1</span><span>{{소제목}}</span><span class="dots"></span><span class="pg">3</span></div>
+      <!-- NEW 칩이 필요하면: <span class="new">NEW</span> 를 dots 앞에 삽입 -->
+    </div>
+  </div>
+
+  <div class="runfoot"><span>{{문서명}}</span><span><img class="lettermark" src="img/company-lettermark.svg" alt="{{회사}}" /></span></div>
+</section>
+
+<!-- ══════════════ 표준 페이지 (single screenshot) ══════════════
+     리드문 → 스크린샷(figure) → 본문 블록 → (선택) 주의사항 note -->
+<section class="page">
+  <div class="runhead"><span><strong>{{제품/파트}}</strong> 사용자 매뉴얼</span><span>{{VERSION}}</span></div>
+
+  <p class="chapter">1. {{대분류}}</p>
+  <div class="title-row"><span class="num">1-1</span><h2>{{제목}}</h2></div>
+  <p class="lead">{{이 기능으로 무엇을 할 수 있는지 한 문장. 여기만 '~할 수 있습니다' 체.}}</p>
+
+  <!-- 가로 스크린샷(웹 콘솔 등)은 그냥 figure. 세로 폰 캡처는 아래 figure.shots 참고 -->
+  <figure><img src="img/{{screenshot}}.png" alt="{{설명}}" /></figure>
+
+  <div class="body">
+    <div class="block">
+      <h3>{{사용 방법}}</h3>
+      <!-- 절차는 번호 목록 -->
+      <ol class="steps">
+        <li>{{단계}} <span class="kbd">버튼명</span> 처럼 UI 명칭은 키캡으로 감싼다.</li>
+        <li>{{단계}}
+          <ul class="bul"><li>{{하위 예시·부연}}</li></ul>
+        </li>
+      </ol>
+    </div>
+    <div class="block">
+      <h3>{{정보성 소제목}}</h3>
+      <!-- 규칙·정보는 점 불릿 -->
+      <ul class="bul">
+        <li>{{항목}}</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 주의사항 / 참고 / 팁 은 좌측 액센트 박스 -->
+  <div class="note">
+    <h3>주의사항</h3>
+    <ul class="bul"><li>{{주의 내용}}</li></ul>
+  </div>
+
+  <div class="runfoot"><span>1. {{대분류}}</span><span class="folio">3</span></div>
+</section>
+
+<!-- ══════════════ 폰 목업 여러 장 (모바일 앱) ══════════════
+     row2 / row3 / row4 — 이미지에 명시적 height 가 걸려 절대 잘리지 않는다.
+     4장(row4)은 폭이 빠듯하므로 height 82mm 로 낮춰 좌우 잘림을 막는다. -->
+<section class="page">
+  <div class="runhead"><span><strong>{{파트}}</strong> 사용자 매뉴얼</span><span>{{VERSION}}</span></div>
+  <p class="chapter">1. {{대분류}}</p>
+  <div class="title-row"><span class="num">1-2</span><h2>{{제목}}</h2></div>
+  <p class="lead">{{리드문}}</p>
+
+  <figure class="shots row3">
+    <img src="img/{{shot-a}}.png" alt="{{단계 A}}" />
+    <img src="img/{{shot-b}}.png" alt="{{단계 B}}" />
+    <img src="img/{{shot-c}}.png" alt="{{단계 C}}" />
+  </figure>
+
+  <div class="body">
+    <div class="block">
+      <h3>{{소제목}}</h3>
+      <ol class="steps"><li>{{단계}}</li></ol>
+    </div>
+  </div>
+
+  <div class="runfoot"><span>1. {{대분류}}</span><span class="folio">4</span></div>
+</section>
+
+</body>
+</html>
