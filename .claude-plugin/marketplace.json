@@ -64,6 +64,13 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/langfuse-laravel-ai"]
+    },
+    {
+      "name": "manual-authoring",
+      "description": "Turn attached UI screenshots and screen descriptions into a polished A4 user manual PDF, no Figma required",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/manual-authoring"]
     }
   ]
 }
