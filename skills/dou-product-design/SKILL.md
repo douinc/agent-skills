@@ -3,7 +3,7 @@ name: dou-product-design
 description: Use when designing or implementing screens for any Dou product Next.js prototype (Next.js + shadcn/ui stack). Covers the full spec-wireframe-implement workflow for product design prototypes.
 author: minsu
 email: minsu@dou.so
-version: 1.4.0
+version: 1.5.0
 ---
 
 # Dou Product Design Workflow
@@ -18,6 +18,19 @@ Next.js + shadcn/ui 기반 Dou 제품 디자인 프로토타입 공통 워크플
 - **파일 없음** → 이 제품의 기준 소스 레포·정책 문서 위치를 담당자에게 물어 `docs/design-harness.md` 생성을 제안한다. 임의로 만들지 않는다.
 
 > design-harness.md의 **내용(레포 경로·정책 위치)은 제품마다 다르며 각 제품 리포가 소유**한다. 이 스킬은 "각 프로젝트의 design-harness.md를 읽고 따른다"는 규칙만 강제한다. (제품 리포 `AGENTS.md`에도 같은 하네스 규칙이 자동 로드 컨텍스트로 실려 있을 수 있다.)
+
+### 정책 게이트 (하네스가 연결된 제품에서 상시 적용)
+
+동기화·통독은 정책을 **읽는** 데서 끝나지 않는다. 스펙·설계·와이어프레임·구현·수정 요청 전부에 대해, 담당자의 요청이 제품 정책(policies·issues·features·discussions 등)과 충돌하면 **그대로 실행하지 않는다.** 여기서 정책 충돌은 시각/레이아웃이 아니라 **제품 로직·도메인 규칙 차원**을 말한다.
+
+충돌 시 순서:
+1. 어떤 문서·정책과 왜 충돌하는지 **문서를 인용해 설명**한다.
+2. 정책에 맞는 **대안을 제시**한다.
+3. 담당자의 **확인을 받은 뒤** 진행한다.
+
+- 예: "이 기능을 빼달라"는 요청이 정책상 필수 기능이면 빼지 말고 이유·대안을 제시. "이 유형 유저는 이렇게 동작하면 안 된다"는 정책이 있으면 그에 맞게 재설계 제안.
+- 이 게이트는 "한 번 읽고 끝"이 아니라 세션 내내 유지되는 상시 제약이다. 애매하면 정책 허용 여부를 담당자에게 **먼저 되묻는다.**
+- 시각/레이아웃 등 정책과 무관한 변경은 종전대로 자유롭게 반영한다.
 
 ## 프로젝트 구조
 
