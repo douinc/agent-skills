@@ -12,7 +12,7 @@ description: >-
 metadata:
   author: minsu-ux
   email: team@dou.so
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # 사용자 매뉴얼 작성 (manual-authoring)
@@ -68,7 +68,14 @@ metadata:
 - **주의 / 참고 / 팁** → `.note` 박스, 페이지 맨 아래.
 - **스크린샷**: 웹·데스크탑 가로 캡처 → 그냥 `<figure>`. 폰 캡처 →
   `<figure class="shots rowN">` (N=장수; layout-notes의 높이 표 참고 — 4장 행은
-  낮춘 높이를 써야 좌우가 안 잘린다).
+  낮춘 높이를 써야 좌우가 안 잘린다). 세로로 긴 데스크탑 창(오버레이 앱 등)은
+  폰과 같은 요령으로 행 클래스를 만들어 쓴다.
+- **스크린샷은 넣기 전에 규격을 맞춘다** — `scripts/normalize_shot.py`로 창 주위
+  그림자 여백을 잘라내고 배경을 figure 배경색과 같게 합성한다. 안 하면 창이 실제보다
+  훨씬 작아 보이고 이미지 경계에 옅은 사각형 자국이 남는다(layout-notes 참고).
+- **가리킬 곳이 있으면 표시본을 따로 만든다** — `scripts/annotate.py`로 빨간 박스
+  (필요하면 번호 배지)를 그려 `*-anno.png`로 저장하고 매뉴얼은 그 파일을 참조한다.
+  원본을 덮어쓰지 않아야 표시 위치를 바꿀 때 캡처를 다시 받지 않는다.
 - 러닝 헤더, `.chapter` 라벨, `.num` 알약, `.folio` 쪽번호를 이웃 페이지와 맞춘다.
   섹션 번호(1-1, 2-3…)는 순서를 유지한다 — 페이지를 끼우면 이후 번호와 목차를
   다시 매긴다(합본 폴리오는 3단계의 `renumber()`가 자동 처리).
@@ -121,5 +128,7 @@ verify.py 최초 1회 설치(머신당): `python3 -m pip install pyobjc-framewor
 - `scripts/render.sh` — 헤드리스 Chrome HTML→PDF.
 - `scripts/verify.py` — 지정한 PDF 페이지를 PNG로 렌더(Quartz). 육안 확인용.
 - `scripts/build.py` — 섹션·에디션을 하나의 HTML로 합치기.
+- `scripts/normalize_shot.py` — 창 캡처의 그림자 여백 제거 + 배경색 통일(넣기 전 필수).
+- `scripts/annotate.py` — 캡처에 빨간 박스·번호 배지 표시(`*-anno.png`로 따로 저장).
 - `references/layout-notes.md` — 레이아웃이 왜 이렇게 됐는지, 잘림 수정법.
 - `references/products.md` — 제품별 컨텍스트 폴더 + 톤·용어 규칙.
