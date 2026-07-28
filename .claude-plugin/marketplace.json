@@ -71,6 +71,13 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/manual-authoring"]
+    },
+    {
+      "name": "public-sector-rfp-authoring",
+      "description": "공공기관·지자체 입찰공고, 제안요청서(RFP), 과업지시서 등 발주기관 관점의 공공사업 문서를 작성·검토할 때 사용",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/public-sector-rfp-authoring"]
     }
   ]
 }
