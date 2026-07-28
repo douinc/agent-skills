@@ -96,6 +96,7 @@ cp -R skills/* ~/.agents/skills/
 | ---- | ---- | ---- |
 | [writing-project-readme](./skills/writing-project-readme/) | 명시적으로 호출했을 때만 동작하는 커맨드형 스킬. 비개발자(PM/디자인/운영)도 읽을 수 있는 종합 README를 처음부터 다시 작성 | `npx skills add douinc/agent-skills@writing-project-readme` |
 | [manual-authoring](./skills/manual-authoring/) | 첨부한 화면 스크린샷과 설명만으로 A4 사용자 매뉴얼 PDF를 만들거나 수정 (Figma 불필요) | `npx skills add douinc/agent-skills@manual-authoring` |
+| [public-sector-rfp-authoring](./skills/public-sector-rfp-authoring/) | 정부·지자체·공공기관 발주기관 관점의 입찰공고서, 제안요청서, 과업내용서, 시스템 구축 RFP 작성 | `npx skills add douinc/agent-skills@public-sector-rfp-authoring` |
 
 ### Observability
 
