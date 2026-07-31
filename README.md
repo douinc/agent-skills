@@ -81,7 +81,8 @@ cp -R skills/* ~/.agents/skills/
 | ---- | ---- | ---- |
 | [onboarding-design](./skills/onboarding-design/) | 회원가입 플로우, 목표 선택 퀴즈, 권한 요청 화면, 페이월 등 사용자의 첫 번째 의미 있는 행동 이전 화면을 설계·검토할 때 사용 | `npx skills add douinc/agent-skills@onboarding-design` |
 | [design-md-to-shadcn](./skills/design-md-to-shadcn/) | 외부 DESIGN.md(Google Labs 디자인 토큰 포맷)를 shadcn/ui 테마의 CSS 변수로 변환·적용 | `npx skills add douinc/agent-skills@design-md-to-shadcn` |
-| [dou-product-design](./skills/dou-product-design/) | Next.js + shadcn/ui 기반 Dou 제품 화면 설계·구현 공통 워크플로우 | `npx skills add douinc/agent-skills@dou-product-design` |
+| [dou-product-design](./skills/dou-product-design/) | Next.js + shadcn/ui 기반 Dou 제품 화면 설계·직접 구현 워크플로우. 설치 시 `dou-uxui-issues`도 함께 설치 | `npx skills add douinc/agent-skills@dou-product-design` |
+| [dou-uxui-issues](./skills/dou-uxui-issues/) | Dou 제품 UI/UX 이슈의 초안·등록, 하위 이슈 관계와 프로젝트 상태 관리 | `npx skills add douinc/agent-skills@dou-uxui-issues` |
 
 ### Figma / Icons
 
