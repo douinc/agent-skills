@@ -39,7 +39,7 @@ Next.js + shadcn/ui 기반 Dou 제품 디자인 프로토타입 공통 워크플
 
 1. 부모 이슈와 현재 디자인 작업 범위를 확인한다.
 2. `dou-uxui-issues` 규칙에 따라 제목만 있는 디자인 하위 이슈 최종안을 보여주고 등록 승인을 받는다.
-3. 승인 후 하위 이슈를 만들고 Parent issue를 연결한 다음 GitHub Project 상태를 `In Progress`로 설정한다.
+3. 승인 후 하위 이슈를 만들고 Parent issue를 연결한 다음 GitHub Project 상태를 `UI/UX Progress`로 설정한다.
 4. 생성한 하위 이슈를 현재 디자인 작업의 추적 이슈로 사용한다.
 5. 디자인 작업이 완료되면 최종 변경사항을 하위 이슈 본문에 정리하고 상태를 `UI/UX Done`으로 변경한다.
 
