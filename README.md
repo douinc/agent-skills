@@ -81,7 +81,6 @@ cp -R skills/* ~/.agents/skills/
 | ---- | ---- | ---- |
 | [onboarding-design](./skills/onboarding-design/) | 회원가입 플로우, 목표 선택 퀴즈, 권한 요청 화면, 페이월 등 사용자의 첫 번째 의미 있는 행동 이전 화면을 설계·검토할 때 사용 | `npx skills add douinc/agent-skills@onboarding-design` |
 | [design-md-to-shadcn](./skills/design-md-to-shadcn/) | 외부 DESIGN.md(Google Labs 디자인 토큰 포맷)를 shadcn/ui 테마의 CSS 변수로 변환·적용 | `npx skills add douinc/agent-skills@design-md-to-shadcn` |
-| [dou-product-design](./skills/dou-product-design/) | Next.js + shadcn/ui 기반 Dou 제품 화면 설계·구현 공통 워크플로우 | `npx skills add douinc/agent-skills@dou-product-design` |
 
 ### Figma / Icons
 
@@ -95,7 +94,6 @@ cp -R skills/* ~/.agents/skills/
 | 스킬 | 설명 | 설치 |
 | ---- | ---- | ---- |
 | [writing-project-readme](./skills/writing-project-readme/) | 명시적으로 호출했을 때만 동작하는 커맨드형 스킬. 비개발자(PM/디자인/운영)도 읽을 수 있는 종합 README를 처음부터 다시 작성 | `npx skills add douinc/agent-skills@writing-project-readme` |
-| [manual-authoring](./skills/manual-authoring/) | 첨부한 화면 스크린샷과 설명만으로 A4 사용자 매뉴얼 PDF를 만들거나 수정 (Figma 불필요) | `npx skills add douinc/agent-skills@manual-authoring` |
 | [public-sector-rfp-authoring](./skills/public-sector-rfp-authoring/) | 정부·지자체·공공기관 발주기관 관점의 입찰공고서, 제안요청서, 과업내용서, 시스템 구축 RFP 작성 | `npx skills add douinc/agent-skills@public-sector-rfp-authoring` |
 
 ### Observability
