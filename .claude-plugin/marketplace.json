@@ -53,20 +53,10 @@
     },
     {
       "name": "dou-product-design",
-      "description": "Next.js + shadcn/ui 기반 Dou 제품 화면 설계·직접 구현 및 GitHub 디자인 작업 추적 워크플로우",
+      "description": "Next.js + shadcn/ui 기반 Dou 제품 화면 설계·구현 공통 워크플로우",
       "source": "./",
       "strict": false,
-      "skills": [
-        "./skills/dou-product-design",
-        "./skills/dou-uxui-issues"
-      ]
-    },
-    {
-      "name": "dou-uxui-issues",
-      "description": "Dou 제품 UI/UX 이슈의 초안·등록·하위 이슈 관계·프로젝트 상태 관리",
-      "source": "./",
-      "strict": false,
-      "skills": ["./skills/dou-uxui-issues"]
+      "skills": ["./skills/dou-product-design"]
     },
     {
       "name": "langfuse-laravel-ai",
