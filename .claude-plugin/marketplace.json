@@ -52,35 +52,11 @@
       "skills": ["./skills/design-md-to-shadcn"]
     },
     {
-      "name": "dou-product-design",
-      "description": "Next.js + shadcn/ui 기반 Dou 제품 화면 설계·직접 구현 및 GitHub 디자인 작업 추적 워크플로우",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/dou-product-design",
-        "./skills/dou-uxui-issues"
-      ]
-    },
-    {
-      "name": "dou-uxui-issues",
-      "description": "Dou 제품 UI/UX 이슈의 초안·등록·하위 이슈 관계·프로젝트 상태 관리",
-      "source": "./",
-      "strict": false,
-      "skills": ["./skills/dou-uxui-issues"]
-    },
-    {
       "name": "langfuse-laravel-ai",
       "description": "Connect Langfuse tracing to a Laravel app using the laravel/ai SDK via axyr/laravel-langfuse auto-instrumentation plus trace context enrichment (session/user/metadata)",
       "source": "./",
       "strict": false,
       "skills": ["./skills/langfuse-laravel-ai"]
-    },
-    {
-      "name": "manual-authoring",
-      "description": "Turn attached UI screenshots and screen descriptions into a polished A4 user manual PDF, no Figma required",
-      "source": "./",
-      "strict": false,
-      "skills": ["./skills/manual-authoring"]
     },
     {
       "name": "public-sector-rfp-authoring",
