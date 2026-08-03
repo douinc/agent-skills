@@ -1,0 +1,4 @@
+interface:
+  display_name: "제품 UI/UX 이슈"
+  short_description: "제품 UI/UX 문제를 GitHub 이슈로 정리"
+  default_prompt: "실제 제품 화면과 디자인 기준 또는 사용 흐름을 검토해서 GitHub 이슈 초안을 작성해줘."
