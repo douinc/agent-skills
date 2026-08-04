@@ -82,6 +82,23 @@ cp -R skills/* ~/.agents/skills/
 | [onboarding-design](./skills/onboarding-design/) | 회원가입 플로우, 목표 선택 퀴즈, 권한 요청 화면, 페이월 등 사용자의 첫 번째 의미 있는 행동 이전 화면을 설계·검토할 때 사용 | `npx skills add douinc/agent-skills@onboarding-design` |
 | [design-md-to-shadcn](./skills/design-md-to-shadcn/) | 외부 DESIGN.md(Google Labs 디자인 토큰 포맷)를 shadcn/ui 테마의 CSS 변수로 변환·적용 | `npx skills add douinc/agent-skills@design-md-to-shadcn` |
 
+### Agent Engineering
+
+| 스킬 | 설명 | 설치 |
+| ---- | ---- | ---- |
+| [graph-engineering](./skills/graph-engineering/) | 여러 컴포넌트에 걸친 변경의 의존성·제약·근거를 표준 지식 맵으로 정리하고 안정적인 프로젝트 지식만 갱신 | `npx skills add douinc/agent-skills@graph-engineering` |
+| [loop-engineering](./skills/loop-engineering/) | 다단계 작업을 `plan → act → verify → decide` 반복으로 실행하고 완료·차단·사용자 결정 조건을 명확히 관리 | `npx skills add douinc/agent-skills@loop-engineering` |
+
+`loop-engineering`은 교차 컴포넌트 작업에서 `graph-engineering`을 함께 사용할 수 있지만, 두 스킬은 각각 독립적으로 설치하고 사용할 수 있습니다.
+
+두 스킬을 함께 설치하려면 다음 명령어를 사용합니다.
+
+```bash
+npx skills add douinc/agent-skills \
+  --skill graph-engineering \
+  --skill loop-engineering
+```
+
 ### Figma / Icons
 
 | 스킬 | 설명 | 설치 |

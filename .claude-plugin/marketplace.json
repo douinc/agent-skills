@@ -64,6 +64,20 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/public-sector-rfp-authoring"]
+    },
+    {
+      "name": "graph-engineering",
+      "description": "Map cross-component dependencies, constraints, decisions, and evidence into durable project knowledge",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/graph-engineering"]
+    },
+    {
+      "name": "loop-engineering",
+      "description": "Run bounded multi-step work with repeated verification and explicit completion or stop decisions",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/loop-engineering"]
     }
   ]
 }
