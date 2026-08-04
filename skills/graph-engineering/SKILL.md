@@ -13,7 +13,7 @@ Model a project as evidence-backed knowledge, not a pile of files. Build only th
 
 1. Define the question and the smallest useful scope.
 2. Inspect existing documentation before source code, tests, configuration, and history.
-3. Attach a repository path, symbol, command result, or commit to every important claim.
+3. Attach a repository path, symbol, sanitized command result, or commit to every important claim.
 4. Classify each claim as `observed`, `inferred`, `proposed`, or `unknown`.
 5. Represent relevant entities and connections with the vocabulary in [knowledge-schema.md](references/knowledge-schema.md).
 6. Apply [update-policy.md](references/update-policy.md) before changing durable documentation.
@@ -47,6 +47,7 @@ Default to read-only analysis. Edit project knowledge only when the user explici
 Never persist:
 
 - chain-of-thought, hidden reasoning, scratch notes, or loop transcripts;
+- raw command output or logs; persist a sanitized conclusion and command reference instead;
 - unverified guesses presented as facts;
 - secrets, credentials, personal data, or environment-specific identifiers;
 - temporary status that will be obsolete when the current task ends.

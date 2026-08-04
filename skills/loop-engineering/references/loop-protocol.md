@@ -13,6 +13,8 @@ constraints:
 budget:
   iterations_remaining: 5
   other_limit: user deadline or tool budget when supplied
+blocker_occurrences:
+  normalized-failure-signature: 0
 iteration: 1
 hypothesis: claim tested by this iteration
 action: smallest authorized intervention
@@ -65,10 +67,10 @@ Choose one transition:
 | `complete` | Every completion criterion has fresh evidence. | Stop and report; for cross-cutting work, include stable facts, decisions, constraints, evidence, and unknowns as a durable-knowledge handoff. |
 | `retry` | The objective is unchanged and new evidence supports a different action. | Decrement budget and PLAN again. |
 | `replan` | New evidence changes scope, sequence, or dependency assumptions within existing authority. | Rewrite the affected state, decrement budget, and PLAN again. |
-| `blocked` | Progress requires unavailable evidence, capability, authority, or verification. | Stop and report. |
+| `blocked` | Progress requires unavailable evidence, capability, authority, or verification, or the same blocker reaches its third occurrence. | Stop and report. |
 | `needs-user-decision` | Multiple materially different valid paths depend on user intent or new authority. | Stop and present the decision. |
 
-Do not call unchanged repetition a retry. If the next action, expected evidence, and failure signature are unchanged, apply the no-progress rule in [stop-conditions.md](stop-conditions.md). A handoff does not authorize a documentation edit; apply `graph-engineering` update policy when installed.
+Count blocker occurrences by normalized condition or failure signature across the active loop, even when other failures occur between them. Do not call unchanged repetition a retry. Apply the no-progress rule in [stop-conditions.md](stop-conditions.md). A handoff does not authorize a documentation edit; apply `graph-engineering` update policy when installed.
 
 ## Example iteration
 

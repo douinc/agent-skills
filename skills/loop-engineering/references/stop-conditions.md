@@ -26,12 +26,12 @@ Use `retry` when the objective and scope remain stable. Use `replan` when eviden
 
 ## No progress
 
-Stop or replan when either occurs:
+Return `blocked` when either occurs:
 
-- three consecutive iterations produce the same blocking condition or failure signature without new evidence;
-- the proposed next action would repeat a failed action for the third time with the same expected evidence.
+- the same blocking condition or failure signature reaches its third occurrence in the active loop, even nonconsecutively;
+- the proposed next action would repeat a failed action and produce that third occurrence with no materially new evidence.
 
-Do not reset this count by renaming the hypothesis or making unrelated edits. If broader dependencies may explain the stall, apply the Graph Escalation conditions before declaring a block.
+Before the third occurrence, retry or replan only when materially new evidence changes the next action or the understood blocker. Track occurrences by normalized signature; do not reset the count because another blocker intervened, the hypothesis was renamed, or unrelated edits were made. If broader dependencies may explain the stall, apply the Graph Escalation conditions before the third occurrence.
 
 ## Blocked
 

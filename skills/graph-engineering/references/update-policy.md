@@ -10,7 +10,7 @@ Search for the repository's existing knowledge homes first:
 4. contributor or agent instructions;
 5. issue, design, and implementation-plan conventions.
 
-Update the closest existing source of truth. Create `docs/agent-context/` only when no suitable home exists and the knowledge will remain useful across multiple tasks.
+Update the closest existing source of truth. When no suitable home exists and the knowledge will remain useful across multiple tasks, propose `docs/agent-context/`. Never create that directory without explicit user approval.
 
 ## Persistence threshold
 
@@ -20,9 +20,11 @@ Persist a claim only when all are true:
 - **Material:** changes future implementation, review, operations, or safety decisions.
 - **Supported:** carries evidence or is explicitly labelled as proposed or unknown.
 - **Scoped:** belongs in the selected document without duplicating another source of truth.
-- **Safe:** contains no secrets, personal data, hidden reasoning, or ephemeral execution state.
+- **Safe:** contains no secrets, personal data, hidden reasoning, raw logs, or ephemeral execution state.
 
 If any condition fails, keep the result in the current response rather than repository documentation.
+
+Keep raw command output session-local. Persist only redacted summaries and enough command or path context to reproduce the evidence safely.
 
 ## Allowed updates
 

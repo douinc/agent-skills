@@ -1,13 +1,13 @@
 ---
 name: loop-engineering
-description: Use when a bounded multi-step task requires autonomous execution, repeated verification, recovery from failed attempts, progress under uncertainty, or an explicit decision to complete, stop, or request user direction.
+description: Use when a software or repository development task requires multiple actions, repeated verification, recovery from failed attempts, or explicit completion, blocking, or user-decision criteria.
 ---
 
 # Loop Engineering
 
 ## Overview
 
-Turn autonomous work into a bounded control loop. Every iteration must reduce uncertainty or move an observable result toward completion; activity alone is not progress.
+Use a bounded control loop where each iteration reduces uncertainty or advances an observable result.
 
 ## Entry Contract
 
@@ -21,7 +21,13 @@ Before acting, establish:
 
 Infer only reversible, low-risk defaults. If missing information would materially change public behavior, cost, scope, or an irreversible action, return `needs-user-decision`.
 
-Read [loop-protocol.md](references/loop-protocol.md) before the first iteration and [stop-conditions.md](references/stop-conditions.md) before declaring an outcome.
+Classify the task before acting:
+
+- **trivial:** run `goal → action → verification` once;
+- **local:** run the full loop with local evidence;
+- **cross-cutting:** run the full loop and apply Graph Escalation.
+
+Read [loop-protocol.md](references/loop-protocol.md) before iterating and [stop-conditions.md](references/stop-conditions.md) before declaring an outcome.
 
 ## Run the Loop
 
@@ -36,7 +42,7 @@ Track the protocol state in task memory or temporary scratch space. Never add lo
 
 ## Graph Escalation
 
-Use local evidence for a contained change. Broaden the map when any observable condition holds:
+Broaden local evidence into a map when:
 
 - a public interface, shared schema, global configuration, or deployment boundary changes;
 - failures appear in multiple components or layers;
@@ -49,13 +55,13 @@ When `graph-engineering` is installed, it is a **REQUIRED SUB-SKILL** for those 
 
 ## Progress and Final Output
 
-During long tool work, give evidence-based progress updates at least every 60 seconds. Report the current decision and next bounded action without exposing private reasoning.
+During long tool work, report evidence, the decision, and next action at least every 60 seconds without exposing private reasoning.
 
 Finish with exactly one outcome:
 
 | Outcome | Required report |
 | --- | --- |
-| `complete` | acceptance evidence, verification commands, and intentional changes |
+| `complete` | acceptance evidence, verification commands or observations, test limitations, and intentional changes |
 | `blocked` | blocking condition, attempts made, recoverable workspace state, and next action |
 | `needs-user-decision` | decision required, evidence, and materially different options |
 

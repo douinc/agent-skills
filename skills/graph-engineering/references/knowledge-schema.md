@@ -10,7 +10,7 @@ Use this vocabulary to make maps consistent across repositories. Include only ty
 | `Interface` | API, event, schema, command, shared type, or user-visible contract | route, schema, handler, contract test |
 | `Decision` | Accepted or proposed architectural choice with rationale | ADR, issue, approved design |
 | `Constraint` | Rule that bounds valid solutions | compatibility rule, policy, runtime limit, invariant |
-| `Evidence` | Source supporting or challenging another node or relation | file, symbol, test result, commit, command output |
+| `Evidence` | Source supporting or challenging another node or relation | file, symbol, test result, commit, sanitized result summary or command reference |
 | `Risk` | Plausible adverse outcome with impact and trigger | failure mode, regression path, operational gap |
 | `Unknown` | Material question whose answer changes the decision | missing owner, unresolved behavior, conflicting sources |
 
@@ -43,6 +43,20 @@ evidence:
 notes: Returns synchronously at the audited revision.
 ```
 
+For a `Decision` node, add lifecycle independently from claim status:
+
+```yaml
+id: decision.async-account-deletion
+type: Decision
+label: Process account deletion asynchronously
+status: observed
+lifecycle: accepted
+evidence:
+  - docs/adr/0042-async-account-deletion.md
+```
+
+Use `lifecycle: draft | accepted | superseded`. An accepted decision may describe a `proposed` relation or future state until implementation evidence exists.
+
 Represent each edge with its own support:
 
 ```yaml
@@ -60,9 +74,9 @@ YAML is illustrative. Use a Markdown table, diagram, or repository-native format
 
 | Status | Use when |
 | --- | --- |
-| `observed` | Directly supported by current code, tests, configuration, command output, or an authoritative accepted record. |
+| `observed` | Directly supported by current code, tests, configuration, a sanitized command result, or an authoritative accepted record. |
 | `inferred` | Supported indirectly; state the inference and what would confirm it. |
-| `proposed` | Describes a requested or recommended future state that is not yet accepted or implemented. |
+| `proposed` | Describes a future state that is not yet implemented; record Decision lifecycle separately. |
 | `unknown` | Evidence is absent, stale, or contradictory enough to prevent a reliable claim. |
 
 ## Consistency checks
