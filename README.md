@@ -88,8 +88,9 @@ cp -R skills/* ~/.agents/skills/
 | ---- | ---- | ---- |
 | [graph-engineering](./skills/graph-engineering/) | 여러 컴포넌트에 걸친 변경의 의존성·제약·근거를 표준 지식 맵으로 정리하고 안정적인 프로젝트 지식만 갱신 | `npx skills add douinc/agent-skills@graph-engineering` |
 | [loop-engineering](./skills/loop-engineering/) | 다단계 작업을 `plan → act → verify → decide` 반복으로 실행하고 완료·차단·사용자 결정 조건을 명확히 관리 | `npx skills add douinc/agent-skills@loop-engineering` |
+| [token-audit](./skills/token-audit/) | Claude Code·Codex 프로젝트 설정(CLAUDE.md, AGENTS.md, MCP, 서브에이전트, 모델)을 근거 기반 체크리스트로 점검하고 사용자 승인 후 토큰 낭비를 수정 | `npx skills add douinc/agent-skills@token-audit` |
 
-두 스킬을 함께 설치하는 구성을 권장합니다. `loop-engineering`은 교차 컴포넌트 작업에서 `graph-engineering`을 함께 사용하지만, 두 스킬은 각각 독립적으로 설치하고 사용할 수도 있습니다.
+`graph-engineering`과 `loop-engineering`은 함께 설치하는 구성을 권장합니다. `loop-engineering`은 교차 컴포넌트 작업에서 `graph-engineering`을 함께 사용하지만, 두 스킬은 각각 독립적으로 설치하고 사용할 수도 있습니다.
 
 두 스킬을 함께 설치하려면 다음 명령어를 사용합니다.
 
