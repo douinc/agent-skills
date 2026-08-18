@@ -78,6 +78,13 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/loop-engineering"]
+    },
+    {
+      "name": "token-audit",
+      "description": "Audit a Claude Code or Codex CLI project for token waste with an evidence-based checklist and apply fixes with the user's approval",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/token-audit"]
     }
   ]
 }
