@@ -1,6 +1,10 @@
 ---
 name: token-audit
 description: Audit a Claude Code or Codex CLI project for token waste and fix it with the user's approval. Use whenever the user wants to check, reduce, or optimize token usage, context bloat, or API/subscription costs of an agent project — phrases like "토큰 점검", "토큰 낭비 찾아줘", "토큰 최적화", "컨텍스트 최적화", "Claude Code 비용 줄여줘", "API 비용이 너무 나와", "audit token efficiency", "check my CLAUDE.md/AGENTS.md/MCP setup". Also trigger when the user complains that sessions hit context limits too fast, that costs jumped unexpectedly, or asks whether their project setup is token-efficient — even if they don't say the word "token".
+metadata:
+  author: develinu
+  email: dev@dou.so
+  version: "1.0.0"
 ---
 
 # 토큰 효율 점검 (Token Audit)
