@@ -74,6 +74,9 @@ cp -R skills/* ~/.agents/skills/
 | 스킬 | 설명 | 설치 |
 | ---- | ---- | ---- |
 | [ux-writing-korean](./skills/ux-writing-korean/) | 한국어 UX 라이팅 가이드 (해요체, 능동형, 긍정형, 캐주얼 경어, 명사 조합 회피) | `npx skills add douinc/agent-skills@ux-writing-korean` |
+| [ko-natural](./skills/ko-natural/) | 요약·앱 카피·푸시·알림·이메일·보고서 등 사람이 읽을 한국어를 번역투·GPT체 없이 생성·교정. 타입별 프리셋과 패턴 사전 기반 린트(`scripts/lint.py`)로 검증하고, 외부 LLM 파이프라인용 프롬프트도 추출(`scripts/export.py`) | `npx skills add douinc/agent-skills@ko-natural` |
+
+`ux-writing-korean`은 앱 UI 문구를 해요체 기준으로 다듬는 스타일 가이드이고, `ko-natural`은 요약·푸시·이메일·문서까지 포함해 번역투와 GPT체를 걷어내는 생성·교정 스킬입니다. UI 문구에서는 두 스킬의 어투 규칙이 겹칠 수 있으니, 프로젝트에서 기준으로 삼을 하나를 정해 두세요.
 
 ### Design
 
