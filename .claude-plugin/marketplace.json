@@ -85,6 +85,13 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/token-audit"]
+    },
+    {
+      "name": "ko-natural",
+      "description": "요약·앱 카피·푸시·이메일·보고서 등 사람이 읽을 한국어를 번역투·GPT체 없이 생성·교정하고, 패턴 사전 기반 자동 린트로 검증",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/ko-natural"]
     }
   ]
 }

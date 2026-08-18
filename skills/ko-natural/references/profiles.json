@@ -1,0 +1,17 @@
+{
+  "note": "명명 프로필 = 타입(프리셋) + 축 오버라이드. export.py --profile 이름, lint는 대응 플래그로 사용. 프로젝트에 맞게 자유롭게 추가할 것.",
+  "axes": {
+    "tone": ["해요체", "합니다체", "다체", "명사형"],
+    "lexicon": ["easy", "normal", "expert"],
+    "length": ["1line", "3line", "paragraph"]
+  },
+  "profiles": {
+    "retriever-summary": {"type": "summary", "tone": "다체", "lexicon": "normal", "length": "3line"},
+    "retriever-dev-summary": {"type": "summary", "tone": "다체", "lexicon": "expert", "length": "3line"},
+    "retriever-card": {"type": "card", "tone": "명사형"},
+    "retriever-push": {"type": "push", "tone": "해요체"},
+    "retriever-notice-email": {"type": "email", "tone": "합니다체"},
+    "ax-workshop-material": {"type": "doc", "tone": "합니다체", "lexicon": "easy"},
+    "dev-doc": {"type": "doc", "tone": "다체", "lexicon": "expert"}
+  }
+}
