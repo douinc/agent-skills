@@ -1,9 +1,16 @@
 {
-  "note": "명명 프로필 = 타입(프리셋) + 축 오버라이드. export.py --profile 이름, lint는 대응 플래그로 사용. 프로젝트에 맞게 자유롭게 추가할 것.",
+  "note": "types = 텍스트 타입별 기본값(lint --type·export가 함께 읽는 단일 출처). profiles = 타입(프리셋) + 축 오버라이드. lint/export 모두 --profile 이름으로 사용. 프로젝트에 맞게 자유롭게 추가할 것.",
   "axes": {
     "tone": ["해요체", "합니다체", "다체", "명사형"],
     "lexicon": ["easy", "normal", "expert"],
     "length": ["1line", "3line", "paragraph"]
+  },
+  "types": {
+    "summary": {"register": "casual", "tone": "다체", "max_line": 45},
+    "card": {"register": "casual", "tone": "명사형", "max_line": 20},
+    "push": {"register": "casual", "tone": "해요체", "max_line": 45},
+    "email": {"register": "formal", "tone": "합니다체"},
+    "doc": {"register": "formal", "tone": "다체", "max_sentence": 80}
   },
   "profiles": {
     "retriever-summary": {"type": "summary", "tone": "다체", "lexicon": "normal", "length": "3line"},
