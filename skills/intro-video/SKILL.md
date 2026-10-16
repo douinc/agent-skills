@@ -1,5 +1,5 @@
 ---
-name: brand-intro-video
+name: intro-video
 description: "회사·제품·서비스 소개 영상을 HyperFrames(HTML→MP4)로 만든다. HyperFrames 공식 워크플로 위에 브리프 계약, 브랜드 토큰, 사실만 쓰는 한국어 카피, OpenRouter 한국어 내레이션·자막·생성 소스, 스틸 검수와 렌더 승인 게이트를 씌운다. '회사 소개 영상', '제품 소개 영상', '서비스 홍보 영상', '런칭 영상', '브랜드 필름', '모션 그래픽 인트로', '로고 스팅', '쇼릴', 'intro video', 'promo video', 'launch video', 'motion graphics'처럼 소개·홍보 영상을 새로 만들거나 고칠 때 반드시 사용한다. 내레이션 없는 15–40초 모션 그래픽과 한국어 내레이션이 있는 30–90초 소개 영상을 모두 다룬다. HyperFrames의 /hyperframes 인터뷰보다 먼저 쓴다. 이 스킬이 브리프를 BRIEF.md로 넘기면 해당 워크플로가 질문 없이 이어 간다. 실사 촬영 편집, 토킹헤드 자막, 기존 영상 컷 편집, 웹페이지용 CSS 애니메이션에는 쓰지 않는다."
 metadata:
   author: initred
@@ -7,7 +7,7 @@ metadata:
   version: "1.0.0"
 ---
 
-# brand-intro-video — 소개 영상 하네스
+# intro-video — 소개 영상 하네스
 
 모델은 영상 파일을 직접 만들지 않는다. 시간 t에 따라 결정되는 HTML 애니메이션 코드를 쓰고, HyperFrames(헤드리스 Chrome + FFmpeg)가 그 코드를 MP4로 굽는다. 같은 모델이라도 결과는 한 줄 프롬프트보다 그 둘레의 하네스에서 갈린다. 하네스는 브리프, 브랜드 토큰, 금지 목록, 스틸 검수, 렌더 승인이다.
 

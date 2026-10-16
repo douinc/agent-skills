@@ -43,7 +43,7 @@ DEFAULTS = {
     "image_model": "google/gemini-3.1-flash-image",
     "video_model": "google/veo-3.1-fast",
 }
-TITLE = "brand-intro-video skill"
+TITLE = "intro-video skill"
 
 
 # ── HTTP ─────────────────────────────────────────────────────────────────────

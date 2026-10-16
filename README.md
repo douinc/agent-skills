@@ -89,9 +89,9 @@ cp -R skills/* ~/.agents/skills/
 
 | 스킬 | 설명 | 설치 |
 | ---- | ---- | ---- |
-| [brand-intro-video](./skills/brand-intro-video/) | 회사·제품 소개 영상(내레이션 없는 모션 그래픽 / 한국어 내레이션 영상)을 HyperFrames로 제작. 브리프 계약·브랜드 토큰·사실 기반 한국어 카피·OpenRouter 내레이션과 자막·스틸 검수와 렌더 승인 게이트를 HyperFrames 공식 워크플로 위에 씌우고, 렌더 결과를 `scripts/verify_mp4.py`로 검증 | `npx skills add douinc/agent-skills@brand-intro-video` |
+| [intro-video](./skills/intro-video/) | 회사·제품 소개 영상(내레이션 없는 모션 그래픽 / 한국어 내레이션 영상)을 HyperFrames로 제작. 브리프 계약·브랜드 토큰·사실 기반 한국어 카피·OpenRouter 내레이션과 자막·스틸 검수와 렌더 승인 게이트를 HyperFrames 공식 워크플로 위에 씌우고, 렌더 결과를 `scripts/verify_mp4.py`로 검증 | `npx skills add douinc/agent-skills@intro-video` |
 
-`brand-intro-video`는 HyperFrames 스킬(`npx skills add heygen-com/hyperframes`)과 함께 씁니다. 내레이션과 생성 이미지·영상에는 `OPENROUTER_API_KEY` 환경 변수가 필요하고, 내레이션 없는 그래픽형은 키 없이 만들 수 있습니다. 카피 문체는 `ko-natural`을 기준으로 삼습니다.
+`intro-video`는 HyperFrames 스킬(`npx skills add heygen-com/hyperframes`)과 함께 씁니다. 내레이션과 생성 이미지·영상에는 `OPENROUTER_API_KEY` 환경 변수가 필요하고, 내레이션 없는 그래픽형은 키 없이 만들 수 있습니다. 카피 문체는 `ko-natural`을 기준으로 삼습니다.
 
 ### Agent Engineering
 
