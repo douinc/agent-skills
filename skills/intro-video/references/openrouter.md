@@ -114,5 +114,54 @@ python3 <SKILL_DIR>/scripts/openrouter_media.py video "<프롬프트>" -o assets
 
 ## 키
 
-- `OPENROUTER_API_KEY` 환경 변수에서만 읽는다. 값을 출력하거나 `BRIEF.md`·`.env`·로그에 쓰지 않는다.
-- 키가 없으면 사용자에게 셸 프로필에 `export OPENROUTER_API_KEY=…`를 추가하고 새 셸을 열어 달라고 요청한다. 그동안 그래픽형 작업은 키 없이 진행할 수 있다.
+키는 `openrouter_media.py`가 직접 찾는다. 사람도 에이전트도 키를 셸에 불러오거나 출력할 일이 없다. 키를 다루는 코드가 한곳에 있어야 새는 길도 한곳만 지키면 된다.
+
+### 처음 한 번 준비하기
+
+1. **이 스킬 전용 키를 새로 만든다.** OpenRouter 대시보드의 API Keys에서 만들고, 다른 서비스와 같이 쓰지 않는다.
+   - 사용 한도를 건다. 예: 하루 $10 또는 월 $5. 한도가 없으면 `key-check`가 경고한다.
+   - 만료일을 짧게 둔다(1–3개월). 만료되면 새 키로 바꾼다.
+   - 관리(management) 키는 쓰지 않는다. 키를 만들고 지울 수 있는 권한이라 새면 피해가 크다.
+2. **키를 저장한다.** 위에서부터 권장한다.
+
+   | 방법 | 명령 | 메모 |
+   |---|---|---|
+   | macOS 키체인 | `security add-generic-password -U -s openrouter -a intro-video -w` | 프롬프트에 붙여 넣는다. 화면·셸 기록에 남지 않고, 디스크에 평문으로 남지 않는다 |
+   | Linux 키 저장소 | `secret-tool store --label="OpenRouter intro-video" service openrouter account intro-video` | 프롬프트에 붙여 넣는다 |
+   | 키 파일 | `mkdir -p ~/.config/openrouter && (umask 077; read -rs k && printf '%s' "$k" > ~/.config/openrouter/key; unset k)` | 레포 밖에 두고 권한은 600이다. 다른 사용자가 읽을 수 있으면 스크립트가 거부한다 |
+   | CI | 비밀 저장소에서 `OPENROUTER_API_KEY` 또는 `OPENROUTER_API_KEY_FILE`로 주입 | 사람이 쓰는 셸에는 두지 않는다 |
+
+3. **확인한다.**
+   ```bash
+   python3 <SKILL_DIR>/scripts/openrouter_media.py key-check
+   ```
+   어디서 찾았는지, 키의 끝 4자리, 한도·남은 금액·오늘과 이번 달 사용액·만료일이 나온다. 키 값은 나오지 않는다.
+
+스크립트가 찾는 순서는 `OPENROUTER_API_KEY` → `OPENROUTER_API_KEY_FILE` → OS 키 저장소(service `openrouter`, account는 `OPENROUTER_KEY_ACCOUNT`, 기본 `intro-video`) → `${XDG_CONFIG_HOME:-~/.config}/openrouter/key`다. 레포의 `.env`는 읽지 않는다.
+
+### 에이전트가 지킬 것
+
+- 키가 있는지는 `key-check`로만 확인한다. `echo $OPENROUTER_API_KEY`, 키 파일 `cat`, `env`·`printenv` 출력을 하지 않는다.
+- `.env`를 `source`하거나 `set -a; . .env`로 불러오지 않는다. 파일을 셸 코드로 실행하는 일이고, 그 셸에서 뜨는 모든 프로세스가 키를 보게 된다.
+- 키를 명령 인자로 넘기지 않는다. 같은 기계의 다른 프로세스가 `ps`로 볼 수 있다.
+- `BRIEF.md`, 노트, 로그, 프롬프트, 커밋, 서브에이전트 지시에 키를 쓰지 않는다. 서브에이전트에게는 "스크립트가 키를 찾는다"고만 말한다.
+- OpenRouter는 이 스크립트로만 부른다. 다른 호출이 필요하면 `curl`에 키를 붙이지 말고 스크립트에 기능을 더한다. 스크립트는 키를 `openrouter.ai`로 가는 요청에만 붙이고, 오류 출력에 섞인 키는 가린다.
+- 키가 없으면 스크립트가 보여 주는 준비 안내를 사용자에게 그대로 전하고, 저장할 때까지 키가 필요 없는 단계를 진행한다. **키를 채팅으로 받지 않는다.** 사용자가 채팅에 붙여 넣었다면 대화 기록에 남았으니 새 키로 바꾸자고 권한다.
+
+### 환경 변수로 두면 생기는 일
+
+- 그 셸에서 실행되는 모든 도구가 키를 읽는다.
+- HyperFrames `capture`는 OpenRouter 키가 환경에 있으면, 캡처한 화면을 자동으로 OpenRouter에 보내 설명을 붙인다(`product-launch-video` Step 1). 공개 전 화면이면 그대로 외부로 나간다. 키체인이나 키 파일에 두면 이런 일이 없다.
+
+### 사용액
+
+- 큰 작업(전체 내레이션, 이미지·영상 생성) 전후로 `key-check`를 돌려 남은 한도와 사용액을 납품 보고에 적는다.
+- 402 오류는 크레딧이나 키 한도가 바닥났다는 뜻이다. 한도를 올릴지는 사용자가 정한다.
+
+### 키가 샜을 때
+
+1. 바로 대시보드에서 그 키를 지우거나 끈다.
+2. 새 키를 만들어 같은 방법으로 다시 저장한다(키체인은 `-U`로 덮어쓴다).
+3. `key-check`로 새 키를 확인한다.
+
+채팅, 로그, 커밋에 붙여 넣은 적이 있으면 샌 것으로 본다. git 이력에 들어갔다면 이력을 지우는 것으로는 부족하고, 키를 폐기하는 것이 먼저다.

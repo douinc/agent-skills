@@ -7,8 +7,15 @@
   stt      오디오 → 단어 타이밍 JSON([{id,text,start,end}])
   image    프롬프트 → 이미지 파일(배경·텍스처용. 한글 글자는 이미지에 넣지 않는다)
   video    프롬프트 → 짧은 b-roll MP4(비동기 작업을 끝날 때까지 기다린다)
+  key-check  키를 어디서 찾았는지와 한도·사용액·만료를 보여 준다(키 값은 보여 주지 않는다)
 
-키는 환경 변수 OPENROUTER_API_KEY에서만 읽는다. 파일에 키를 쓰지 않는다.
+키는 스크립트가 직접 찾는다. 사람이나 에이전트가 키를 셸에 불러올 필요가 없다. 찾는 순서:
+  1. 환경 변수 OPENROUTER_API_KEY            (CI 등 주입되는 환경용)
+  2. 환경 변수 OPENROUTER_API_KEY_FILE이 가리키는 파일
+  3. OS 키 저장소 — macOS 키체인(service=openrouter), Linux secret-tool(service openrouter)
+     account는 OPENROUTER_KEY_ACCOUNT(기본 intro-video)
+  4. ${XDG_CONFIG_HOME:-~/.config}/openrouter/key
+파일은 본인 소유이고 다른 사용자가 읽을 수 없어야(chmod 600) 쓴다. 레포의 .env는 읽지 않는다.
 
 예:
   python3 openrouter_media.py models --modality speech --grep ko-KR
@@ -46,18 +53,88 @@ DEFAULTS = {
 TITLE = "intro-video skill"
 
 
-# ── HTTP ─────────────────────────────────────────────────────────────────────
+# ── 키 ───────────────────────────────────────────────────────────────────────
+KEYCHAIN_SERVICE = "openrouter"
+SETUP_HINT = """OpenRouter 키를 찾지 못했다. 이 스킬 전용 키(사용 한도를 건 키)를 만들어 아래 중 한 곳에 둔다.
+  macOS 키체인(권장, 붙여넣기 프롬프트가 뜬다):
+    security add-generic-password -U -s openrouter -a intro-video -w
+  키 파일(레포 밖, 본인만 읽기):
+    mkdir -p ~/.config/openrouter && (umask 077; read -rs k && printf '%s' "$k" > ~/.config/openrouter/key; unset k)
+확인: python3 <SKILL_DIR>/scripts/openrouter_media.py key-check
+자세한 내용: references/openrouter.md '키'"""
+_KEY = None  # (value, source)
+
+
+def _read_key_file(path):
+    p = Path(path).expanduser()
+    if not p.is_file():
+        return None
+    st = p.stat()
+    if os.name == "posix":
+        if st.st_uid != os.getuid():
+            sys.exit(f"{p}의 소유자가 현재 사용자가 아니다. 키 파일은 본인 소유여야 한다.")
+        if st.st_mode & 0o077:
+            sys.exit(f"{p}를 다른 사용자도 읽을 수 있다(권한 {oct(st.st_mode & 0o777)}). chmod 600 {p} 뒤 다시 실행한다.")
+    return p.read_text().strip() or None
+
+
+def _read_keystore(account):
+    if sys.platform == "darwin" and shutil.which("security"):
+        r = subprocess.run(["security", "find-generic-password", "-s", KEYCHAIN_SERVICE, "-a", account, "-w"],
+                           capture_output=True, text=True)
+        return (r.stdout.strip() or None) if r.returncode == 0 else None
+    if shutil.which("secret-tool"):
+        r = subprocess.run(["secret-tool", "lookup", "service", KEYCHAIN_SERVICE, "account", account],
+                           capture_output=True, text=True)
+        return (r.stdout.strip() or None) if r.returncode == 0 else None
+    return None
+
+
+def resolve_key():
+    """(키, 출처). 출처는 키 값이 아니라 어디서 찾았는지만 담는다."""
+    global _KEY
+    if _KEY:
+        return _KEY
+    account = os.environ.get("OPENROUTER_KEY_ACCOUNT", "intro-video")
+    config = Path(os.environ.get("XDG_CONFIG_HOME", "~/.config")).expanduser() / "openrouter" / "key"
+    candidates = [
+        ("환경 변수 OPENROUTER_API_KEY", lambda: os.environ.get("OPENROUTER_API_KEY", "").strip() or None),
+        ("OPENROUTER_API_KEY_FILE", lambda: _read_key_file(os.environ["OPENROUTER_API_KEY_FILE"])
+            if os.environ.get("OPENROUTER_API_KEY_FILE") else None),
+        (f"OS 키 저장소(service={KEYCHAIN_SERVICE}, account={account})", lambda: _read_keystore(account)),
+        (f"키 파일 {config}", lambda: _read_key_file(config)),
+    ]
+    for source, read in candidates:
+        value = read()
+        if value:
+            if not value.startswith("sk-or-"):
+                print(f"경고: {source}의 값이 OpenRouter 키 형식(sk-or-…)이 아니다.", file=sys.stderr)
+            _KEY = (value, source)
+            return _KEY
+    sys.exit(SETUP_HINT)
+
+
 def key():
-    k = os.environ.get("OPENROUTER_API_KEY", "").strip()
-    if not k:
-        sys.exit("OPENROUTER_API_KEY가 없다. 셸 프로필에 export하거나 실행 직전에 환경 변수로 넘긴다(파일에 쓰지 않는다).")
-    return k
+    return resolve_key()[0]
 
 
+def redact(text):
+    """출력에 키가 섞이면 가린다. 키를 아직 찾지 않았으면 sk-or- 형식만 가린다."""
+    if _KEY:
+        text = text.replace(_KEY[0], "sk-or-…(가림)")
+    return re.sub(r"sk-or-[A-Za-z0-9_-]{8,}", "sk-or-…(가림)", text)
+
+
+# ── HTTP ─────────────────────────────────────────────────────────────────────
 def request(method, url, body=None, auth=True, timeout=180, retries=2):
-    """(status, headers, bytes). 429·5xx는 두 번까지 다시 시도한다."""
+    """(status, headers, bytes). 429·5xx는 두 번까지 다시 시도한다.
+
+    키는 openrouter.ai로 가는 요청에만 붙인다. 응답에 담긴 다른 도메인의 URL(서명된 다운로드 링크 등)로
+    키가 새지 않게 하기 위해서다.
+    """
     headers = {"X-OpenRouter-Title": TITLE}
-    if auth:
+    host = urllib.parse.urlparse(url).hostname or ""
+    if auth and (host == "openrouter.ai" or host.endswith(".openrouter.ai")):
         headers["Authorization"] = f"Bearer {key()}"
     data = None
     if body is not None:
@@ -79,12 +156,16 @@ def request(method, url, body=None, auth=True, timeout=180, retries=2):
                         "사용자에게 알린 뒤 `models --zdr`로 ZDR을 지원하는 모델을 고른다.")
             elif b"IMAGE_RECITATION" in payload:
                 hint = "\n→ 이미지 모델이 저작권 오탐으로 막았다. 프롬프트를 바꿔 다시 시도하거나 다른 이미지 모델을 쓴다."
-            sys.exit(f"{method} {url} → HTTP {e.code}: {payload[:600].decode(errors='replace')}{hint}")
+            elif e.code == 401:
+                hint = "\n→ 키가 틀렸거나 폐기됐다. key-check로 어떤 키를 쓰고 있는지 확인한다."
+            elif e.code == 402:
+                hint = "\n→ 크레딧이나 이 키의 사용 한도가 바닥났다. key-check로 남은 한도를 확인한다."
+            sys.exit(redact(f"{method} {url} → HTTP {e.code}: {payload[:600].decode(errors='replace')}{hint}"))
         except urllib.error.URLError as e:
             if attempt < retries:
                 time.sleep(2 * (attempt + 1))
                 continue
-            sys.exit(f"{method} {url} 연결 실패: {e.reason}")
+            sys.exit(redact(f"{method} {url} 연결 실패: {e.reason}"))
 
 
 def post_json(path, body, **kw):
@@ -300,6 +381,41 @@ def load_json(path):
 
 
 # ── 서브커맨드 ───────────────────────────────────────────────────────────────
+def cmd_key_check(a):
+    value, source = resolve_key()
+    _, _, raw = request("GET", f"{API}/key")
+    d = json.loads(raw).get("data", {})
+    info = {
+        "source": source,
+        "key": f"…{value[-4:]}",
+        "label": d.get("label"),
+        "limit_usd": d.get("limit"),
+        "limit_remaining_usd": d.get("limit_remaining"),
+        "limit_reset": d.get("limit_reset"),
+        "usage_daily_usd": d.get("usage_daily"),
+        "usage_monthly_usd": d.get("usage_monthly"),
+        "expires_at": d.get("expires_at"),
+        "is_management_key": d.get("is_management_key"),
+        "effective_budget": d.get("effective_budget"),
+    }
+    print(redact(json.dumps(info, ensure_ascii=False, indent=2)))
+    warn = []
+    if source.startswith("환경 변수"):
+        warn.append("키가 환경 변수에 있다. 그 셸에서 뜨는 모든 프로세스가 볼 수 있고, HyperFrames capture 같은 도구가 "
+                    "자동으로 써서 화면을 외부로 보낼 수 있다. 키체인이나 키 파일로 옮긴다.")
+    if d.get("is_management_key"):
+        warn.append("관리(management) 키다. 키를 만들고 지울 수 있는 권한이라 영상 작업에 쓰지 않는다. 추론용 일반 키를 쓴다.")
+    if d.get("limit") is None and not d.get("effective_budget"):
+        warn.append("이 키에는 사용 한도가 없다. 대시보드에서 이 스킬 전용 키에 한도(예: 월 $5)를 건다.")
+    remaining = d.get("limit_remaining")
+    if remaining is not None and remaining < 1:
+        warn.append(f"남은 한도가 ${remaining}다. 이미지·영상 생성 전에 한도를 확인한다.")
+    if not d.get("expires_at"):
+        warn.append("만료일이 없는 키다. 정기적으로 교체하거나 만료일을 정해 둔다.")
+    for w in warn:
+        print(f"경고: {w}", file=sys.stderr)
+
+
 def cmd_models(a):
     q = urllib.parse.urlencode({"output_modalities": a.modality})
     _, _, raw = request("GET", f"{API}/models?{q}", auth=False)
@@ -456,6 +572,9 @@ def cmd_video(a):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
+
+    p = sub.add_parser("key-check", help="키 출처·한도·사용액·만료 확인(키 값은 출력하지 않음)")
+    p.set_defaults(fn=cmd_key_check)
 
     p = sub.add_parser("models", help="현재 모델 목록(키 불필요)")
     p.add_argument("--modality", default="speech", choices=["speech", "transcription", "image", "video", "audio", "all"])

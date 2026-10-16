@@ -95,7 +95,7 @@
     },
     {
       "name": "intro-video",
-      "description": "회사·제품 소개 영상을 HyperFrames로 제작하고 브리프·브랜드 토큰·사실 기반 한국어 카피·OpenRouter 내레이션·스틸 검수와 렌더 승인 게이트로 품질을 고정",
+      "description": "회사·제품·서비스·기능 소개 영상을 HyperFrames로 제작하고 브리프·브랜드 토큰·사실 기반 한국어 카피·OpenRouter 내레이션·스틸 검수와 렌더 승인 게이트로 품질을 고정",
       "source": "./",
       "strict": false,
       "skills": ["./skills/intro-video"]
