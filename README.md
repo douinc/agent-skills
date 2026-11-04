@@ -124,6 +124,7 @@ npx skills add douinc/agent-skills \
 | ---- | ---- | ---- |
 | [writing-project-readme](./skills/writing-project-readme/) | 명시적으로 호출했을 때만 동작하는 커맨드형 스킬. 비개발자(PM/디자인/운영)도 읽을 수 있는 종합 README를 처음부터 다시 작성 | `npx skills add douinc/agent-skills@writing-project-readme` |
 | [public-sector-rfp-authoring](./skills/public-sector-rfp-authoring/) | 정부·지자체·공공기관 발주기관 관점의 입찰공고서, 제안요청서, 과업내용서, 시스템 구축 RFP 작성 | `npx skills add douinc/agent-skills@public-sector-rfp-authoring` |
+| [release-showcase](./skills/release-showcase/) | 릴리스 태그 사이의 변경을 이전·이후 스크린샷, 클릭 흐름 녹화 영상, 비교·단계·탭·흐름도 컴포넌트로 보여 주는 파일 하나짜리 HTML 릴리스 문서. 초안·재료 묶음(`init`), 글·자료 기계 검사(`check`), 태그 시점 코드 녹화(`build --record`), 데스크톱·모바일 폭 검수(`verify`) | `npx skills add douinc/agent-skills@release-showcase` |
 
 ### Observability
 
