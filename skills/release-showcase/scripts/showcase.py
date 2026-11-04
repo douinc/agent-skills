@@ -227,37 +227,45 @@ class Media:
             self._cache[key] = data_uri(raw, MIME.get(Path(path).suffix.lower(), "image/png"))
         return self._cache[key]
 
-    def clip(self, clip_id: str) -> tuple[str, list[dict]]:
+    def clip(self, clip_id: str) -> tuple[str, str, list[dict]]:
+        """(base64, MIME, 챕터). 문서에는 H.264 MP4로 싣는다 — Safari·iOS는 WebM을 못 틀거나 data: 영상을 못 연다."""
         raw = self.media_dir / f"{clip_id}.raw.webm"
-        encoded = self.media_dir / f"{clip_id}.webm"
         meta_path = self.media_dir / f"{clip_id}.chapters.json"
         meta = json.loads(meta_path.read_text()) if meta_path.exists() else {"lead": 0, "chapters": []}
         lead = float(meta.get("lead", 0))
-        if raw.exists() and (not encoded.exists() or encoded.stat().st_mtime < raw.stat().st_mtime):
-            if meta.get("encoded"):
-                shutil.copyfile(raw, encoded)  # record.mjs가 이미 장치 픽셀 VP9로 묶었다
-            else:
-                encode_clip(raw, encoded, lead)
-        if not encoded.exists():
-            mp4 = self.media_dir / f"{clip_id}.mp4"
-            if mp4.exists():
-                return data_uri(mp4.read_bytes(), "video/mp4"), meta["chapters"]
-            raise SystemExit(f"영상 '{clip_id}'가 없어요 — `build --record` 또는 {encoded}를 넣어요")
         chapters = meta["chapters"]
-        if raw.exists() and not meta.get("encoded") and not shutil.which("ffmpeg"):
-            # 다시 인코딩하지 못했으면 앞쪽 로딩 구간이 남아 있으니 챕터 시각을 그만큼 민다
+        mp4 = self.media_dir / f"{clip_id}.mp4"
+        if raw.exists() and (not mp4.exists() or mp4.stat().st_mtime < raw.stat().st_mtime) and h264_available():
+            encode_clip(raw, mp4, lead)
+        if mp4.exists():
+            return base64.b64encode(mp4.read_bytes()).decode(), "video/mp4", chapters
+        # H.264 인코더가 없으면 WebM으로 싣는다 — Chrome·Edge·Firefox에서만 재생된다
+        webm = self.media_dir / f"{clip_id}.webm"
+        source = webm if webm.exists() else raw
+        if not source.exists():
+            raise SystemExit(f"영상 '{clip_id}'가 없어요 — `build --record` 또는 {mp4}를 넣어요")
+        print(f"△ {clip_id}: H.264 인코더(ffmpeg libx264)가 없어 WebM으로 실어요 — Safari·iPhone에서는 재생되지 않아요")
+        if source == raw and not meta.get("encoded"):
+            # 앞쪽 로딩 구간을 자르지 못했으니 챕터 시각을 그만큼 민다
             chapters = [{**c, "t": c["t"] + lead} for c in chapters]
-        return data_uri(encoded.read_bytes(), "video/webm"), chapters
+        return base64.b64encode(source.read_bytes()).decode(), "video/webm", chapters
+
+
+def h264_available() -> bool:
+    if not shutil.which("ffmpeg"):
+        return False
+    out = subprocess.run(["ffmpeg", "-hide_banner", "-encoders"], capture_output=True, text=True).stdout
+    return "libx264" in out
 
 
 def encode_clip(raw: Path, out: Path, lead: float) -> None:
-    """Playwright 녹화(VP8, 고정 비트레이트)를 앞쪽 로딩을 자르고 VP9로 줄인다. ffmpeg가 없으면 원본."""
-    if not shutil.which("ffmpeg"):
-        shutil.copyfile(raw, out)
-        return
+    """녹화 원본을 앞쪽 로딩을 자르고 모든 브라우저가 트는 H.264 MP4(yuv420p, faststart)로 만든다."""
     subprocess.run(
-        ["ffmpeg", "-loglevel", "error", "-y", "-ss", f"{lead:.2f}", "-i", str(raw), "-c:v", "libvpx-vp9",
-         "-crf", "36", "-b:v", "0", "-row-mt", "1", "-an", str(out)],
+        ["ffmpeg", "-loglevel", "error", "-y", "-ss", f"{lead:.2f}", "-i", str(raw), "-c:v", "libx264",
+         "-preset", "slow", "-crf", "24", "-pix_fmt", "yuv420p", "-profile:v", "high",
+         "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2:out_range=tv,format=yuv420p", "-color_range", "tv",
+         "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
+         "-movflags", "+faststart", "-an", str(out)],
         check=True,
     )
 
@@ -506,7 +514,7 @@ class Renderer:
         return f'<div class="tabs" data-tabs><div class="tab-heads">{heads}</div>{panes}</div>'
 
     def video(self, m: dict) -> str:
-        src, chapters = self.media.clip(m["clip"])
+        b64, mime, chapters = self.media.clip(m["clip"])
         poster = f' poster="{self.media.image(m["poster"])}"' if m.get("poster") else ""
         chap = "".join(
             f'<li><button type="button" data-t="{c["t"]:.2f}"><time>{int(c["t"]) // 60}:{int(c["t"]) % 60:02d}</time>'
@@ -516,7 +524,8 @@ class Renderer:
         return f"""
 <div class="video" data-video>
   <div class="window video-frame">
-    <video src="{src}"{poster} muted playsinline preload="metadata" controls></video>
+    <video{poster} muted playsinline preload="auto" controls data-type="{mime}"></video>
+    <script type="application/octet-stream" class="clip-data">{b64}</script>
     <button type="button" class="play" aria-label="재생">▶</button>
   </div>
   <ol class="chapters">{chap}</ol>
@@ -729,7 +738,7 @@ class Checker:
         clips = story_dir / "clips.json"
         self.clips = json.loads(clips.read_text()) if clips.exists() else []
         self.clip_ids = {c["id"] for c in self.clips}
-        self.clip_ids |= {p.name.split(".")[0] for p in (story_dir / ".media").glob("*.webm")}
+        self.clip_ids |= {p.name.split(".")[0] for ext in ("*.webm", "*.mp4") for p in (story_dir / ".media").glob(ext)}
         self._ui: dict[str, bool] = {}
 
     def run(self) -> Report:

@@ -95,6 +95,25 @@ async function videoProblems(page) {
       out.push(`영상 ${i + 1}: 재생할 수 없어요 (${state.error ?? `길이 ${state.duration}`})`)
       continue
     }
+    // 메타데이터만으로는 부족하다 — 실제로 틀어 시간이 흐르는지 본다(코덱을 못 풀면 여기서 멈춘다)
+    const played = await video.evaluate(async (v) => {
+      v.muted = true
+      try {
+        await v.play()
+      } catch (e) {
+        return { ok: false, why: `${e.name}` }
+      }
+      const from = v.currentTime
+      await new Promise((r) => setTimeout(r, 1500))
+      const moved = v.currentTime - from
+      v.pause()
+      v.currentTime = 0
+      return { ok: moved > 0.5, why: `1.5초 동안 ${moved.toFixed(2)}초 진행` }
+    })
+    if (!played.ok) out.push(`영상 ${i + 1}: 틀어도 재생되지 않아요 (${played.why})`)
+    const type = await video.getAttribute('data-type')
+    if (type && type !== 'video/mp4')
+      out.push(`영상 ${i + 1}: ${type}는 Safari·iPhone에서 재생되지 않아요 — ffmpeg libx264로 MP4를 만들어요`)
     const chapters = await page
       .locator('[data-video]')
       .nth(i)

@@ -3,7 +3,7 @@ name: release-showcase
 description: "정식 릴리스의 변경을 이전·이후 스크린샷, 클릭 흐름 녹화 영상, 비교·단계·탭·흐름도 같은 HTML 컴포넌트로 보여 주는 파일 하나짜리 릴리스 문서를 만든다. 텍스트뿐인 릴리스 노트로는 어떤 UX가 바뀌었고 새 기능을 어떻게 쓰는지 감이 안 올 때 쓴다. '릴리스 노트 문서 만들어 줘', '릴리스 쇼케이스', '이번 배포 변경사항 정리해서 공유', '릴리즈 노트 HTML', '변경사항을 화면으로 보여 주는 문서', '업데이트 소개 페이지', 'what's new 페이지', 'release notes with screenshots', 'changelog page', '배포 공지 자료'처럼 버전 태그 사이의 변경을 팀·고객에게 시각적으로 알릴 때 반드시 사용한다. git 태그로 릴리스하는 저장소라면 웹·데스크톱·모바일 어느 앱이든 쓴다. 커밋 목록만 필요한 CHANGELOG.md 갱신, 릴리스 태그·배포 자체, 마케팅 영상 제작에는 쓰지 않는다."
 metadata:
   author: develinu
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # release-showcase — 화면으로 보여 주는 릴리스 문서
@@ -35,7 +35,7 @@ metadata:
 ## 0. 준비
 
 - 저장소 루트에 `.release-showcase/config.json`이 있는지 본다. 없으면 `references/config.md`대로 만든다. 앱마다 태그 접두사·소스 경로·스크린샷 폴더·화면 문구 경로·녹화 방법을 적는다. 저장소에 프로젝트 전용 스킬이나 CLAUDE.md가 있으면 거기 적힌 릴리스 규칙(기준 태그 고르는 법, 쓰지 않는 말)을 먼저 읽는다.
-- 필요한 것: git, Python 3.10+, `gh`(PR 본문·릴리스 파일 — 없으면 그 부분만 빠진다), Node 18+ 또는 bun(녹화·검수), ffmpeg(영상 압축 — 없으면 원본을 싣고 파일이 두 배쯤 커진다). Playwright는 프로젝트의 `node_modules`에 있으면 그것을, 없으면 `~/.cache/release-showcase`에 한 번 설치한다.
+- 필요한 것: git, Python 3.10+, `gh`(PR 본문·릴리스 파일 — 없으면 그 부분만 빠진다), Node 18+ 또는 bun(녹화·검수), ffmpeg + libx264(영상 녹화·MP4 인코딩 — 없으면 흐릿한 WebM으로 물러나 Safari·iPhone에서 재생되지 않는다). Playwright는 프로젝트의 `node_modules`에 있으면 그것을, 없으면 `~/.cache/release-showcase`에 한 번 설치한다.
 - `git fetch --tags`로 태그를 최신으로 맞춘다.
 
 ## 1. 범위
@@ -130,4 +130,5 @@ showcase verify <태그>                    # 만들어 둔 HTML만 다시 검�
 - 비교(`compare`)는 같은 파일 이름이라도 두 태그에서 내용이 같으면 `check`가 막는다 — 바뀌지 않은 화면은 `image`로.
 - 녹화에서 두 번째 영상이 멈추는 일을 막으려고 영상마다 별도 프로세스로 찍는다. 녹화가 느리면 영상 수를 줄인다.
 - 영상은 장치 픽셀(`record.scale`) 그대로 찍는다(Chrome screencast + ffmpeg). Playwright 기본 녹화는 배율을 무시해 제품 화면이 틀 왼쪽 위에 작게 찍히므로 쓰지 않는다 — ffmpeg가 없을 때만 그쪽으로 물러난다(흐릿함).
+- 영상은 **H.264 MP4**로 싣고 페이지가 열릴 때 Blob 주소로 바꿔 튼다. WebM은 Safari·iPhone이 못 틀고, `data:` 주소 영상은 Safari가 열지 못한다. `verify`는 영상을 실제로 틀어 시간이 흐르는지 본다.
 - 결과 HTML이 10MB를 넘으면 메신저 첨부 한도에 걸린다. 영상을 줄이거나(30초 안팎) `steps`로 바꾼다.

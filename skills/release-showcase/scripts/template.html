@@ -282,6 +282,15 @@ footer { color: var(--ink-3); font-size: 13px; padding: 40px 0 60px; text-align:
   // 영상 + 챕터
   $$('[data-video]').forEach((el) => {
     const v = el.querySelector('video');
+    // 영상은 base64로 들어 있다 — data: 주소 대신 Blob 주소로 연다(Safari·iOS는 data: 영상을 못 튼다)
+    const raw = el.querySelector('.clip-data');
+    if (raw) {
+      const bin = atob(raw.textContent.trim());
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      v.src = URL.createObjectURL(new Blob([bytes], { type: v.dataset.type || 'video/mp4' }));
+      raw.remove();
+    }
     const chaps = $$('.chapters button', el);
     const play = el.querySelector('.play');
     play.addEventListener('click', () => v.play());
