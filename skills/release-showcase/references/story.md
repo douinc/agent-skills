@@ -74,12 +74,16 @@
   "query": { "fixture": "two-cards" },  // 주소 뒤에 붙일 쿼리 (선택) — 목 데이터 상태를 고를 때
   "ready": "main h1",                   // 이 앱의 record.ready 대신 쓸 선택자 (선택)
   "introCaption": "설정 홈", "intro": 1500,    // 첫 화면 챕터와 머무는 시간(ms)
+  "initData": ".media/real/result.json",  // (선택) window.__SHOWCASE_DATA__로 넘길 JSON — 실제 처리 결과 등
+  "initScript": "real-result.js",         // (선택) 페이지 스크립트보다 먼저 돌 JS — 목 응답을 실제 결과로 바꿀 때
   "steps": [
     { "role": "button", "name": "반복 지출 추가", "caption": "① 추가 누르기" },
     { "role": "textbox", "name": "이름", "action": "type", "value": "월세" },
     { "text": "매월", "pause": 1200 },
     { "role": "option", "name": "1일" },
     { "role": "button", "name": "저장", "dialog": "반복 지출" , "caption": "② 저장" },
+    { "upload": [".media/real/receipt.jpg"] },   // 파일 입력에 바로 넣기 (selector로 입력을 고를 수 있음)
+    { "screenshot": "after-upload" },           // .media/after-upload.png — story에서 local로 쓴다
     { "selector": "[data-test=toast]", "action": "hover" },
     { "press": "Escape" },
     { "wait": 1000 }
@@ -93,6 +97,22 @@
 - `role` + `name`: 접근성 역할과 이름 — `button`·`textbox`·`option`·`checkbox`·`link`·`tab` 등. `exact: false`면 이름 포함. `dialog`에 대화상자 이름(또는 `true`)을 주면 그 안에서만 찾는다.
 - `selector`: CSS 선택자 — 이름이 없는 요소에만.
 
-`action`: `click`(기본) · `type`(한 글자씩, 줄바꿈은 Shift+Enter) · `fill`(한 번에) · `hover` · `scroll`. 그 밖에 `{ "press": "키" }`, `{ "wait": ms }`. 모든 단계에 `caption`(이 단계부터 시작하는 챕터)과 `pause`(단계 뒤 머무는 ms, 기본 900)를 붙일 수 있다.
+`action`: `click`(기본) · `type`(한 글자씩, 줄바꿈은 Shift+Enter) · `fill`(한 번에) · `hover` · `scroll`. 그 밖에 `{ "press": "키" }`, `{ "wait": ms }`, `{ "upload": [파일…], "selector"? }`, `{ "screenshot": "이름" }`(가짜 커서 없이 찍는다). 파일 경로는 clips.json 기준이다.
+
+### 목 응답을 실제 결과로 바꾸기
+
+하네스가 목 데이터로 돌면 결과 화면이 "합성 예시"로 나온다. 실제 자료로 제품의 실제 처리를 한 번 돌려 받은 결과를 `.media/real/*.json`에 두고, `initScript`로 그 응답만 바꾼다. 예: 목 브리지가 `window.app = {...}`로 설치되면
+
+```js
+;(() => {
+  const result = window.__SHOWCASE_DATA__
+  let bridge
+  Object.defineProperty(window, 'app', {
+    configurable: true,
+    get: () => bridge,
+    set: (v) => { v.drafts.create = () => Promise.resolve(result); bridge = v },
+  })
+})()
+``` 모든 단계에 `caption`(이 단계부터 시작하는 챕터)과 `pause`(단계 뒤 머무는 ms, 기본 900)를 붙일 수 있다.
 
 찾지 못하면 `.media/<id>.fail.png`에 그 순간 화면을 남기고 멈춘다.

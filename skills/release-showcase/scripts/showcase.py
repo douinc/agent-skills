@@ -92,6 +92,8 @@ class Config:
     include_direct_commits: bool
     notes: list[str]
     tone: str  # 해요체 | 합니다체 | off — 문장 끝 검사
+    frame_width: int  # 그림 틀 최대 폭(px) — 좁은 창 앱은 작게, 웹 화면은 크게
+    video_width: int  # 영상 틀 최대 폭(px)
 
 
 def git(root: Path, *args: str, binary: bool = False, check: bool = True) -> str | bytes:
@@ -138,6 +140,7 @@ def load_config() -> Config:
         deny=re.compile(deny.strip("|"), re.IGNORECASE) if deny.strip("|") else None,
         jargon=JARGON + raw.get("jargon", []), include_direct_commits=raw.get("includeDirectCommits", False),
         notes=raw.get("notes", []), tone=raw.get("tone", "해요체"),
+        frame_width=int(raw.get("frameWidth", 420)), video_width=int(raw.get("videoWidth", 520)),
     )
 
 
@@ -231,14 +234,17 @@ class Media:
         meta = json.loads(meta_path.read_text()) if meta_path.exists() else {"lead": 0, "chapters": []}
         lead = float(meta.get("lead", 0))
         if raw.exists() and (not encoded.exists() or encoded.stat().st_mtime < raw.stat().st_mtime):
-            encode_clip(raw, encoded, lead)
+            if meta.get("encoded"):
+                shutil.copyfile(raw, encoded)  # record.mjs가 이미 장치 픽셀 VP9로 묶었다
+            else:
+                encode_clip(raw, encoded, lead)
         if not encoded.exists():
             mp4 = self.media_dir / f"{clip_id}.mp4"
             if mp4.exists():
                 return data_uri(mp4.read_bytes(), "video/mp4"), meta["chapters"]
             raise SystemExit(f"영상 '{clip_id}'가 없어요 — `build --record` 또는 {encoded}를 넣어요")
         chapters = meta["chapters"]
-        if raw.exists() and not shutil.which("ffmpeg"):
+        if raw.exists() and not meta.get("encoded") and not shutil.which("ffmpeg"):
             # 다시 인코딩하지 못했으면 앞쪽 로딩 구간이 남아 있으니 챕터 시각을 그만큼 민다
             chapters = [{**c, "t": c["t"] + lead} for c in chapters]
         return data_uri(encoded.read_bytes(), "video/webm"), chapters
@@ -631,7 +637,7 @@ def build(cfg: Config, story_dir: Path, out: Path, record: bool) -> Path:
         "NOTES": f'<section class="notes" id="notes"><h2 class="sec">팀 참고</h2>{notes}</section>' if notes else "",
         "CHANGES": r.changes(changes), "DOWNLOADS": downloads,
         "FOOTER": ink(f"{base} → {tag} · 화면은 저장소에 커밋된 스크린샷과 녹화예요"),
-        "BRAND": cfg.brand, "BRAND_2": blend(cfg.brand, 0.18), "BRAND_SOFT": blend(cfg.brand, 0.9),
+        "FRAME_W": str(cfg.frame_width), "VIDEO_W": str(cfg.video_width), "BRAND": cfg.brand, "BRAND_2": blend(cfg.brand, 0.18), "BRAND_SOFT": blend(cfg.brand, 0.9),
     }
     page = TEMPLATE.read_text()
     for key, value in body.items():
@@ -721,7 +727,8 @@ class Checker:
         self.app = cfg.apps.get(story.get("app", ""))
         self.refs = {"tag": story.get("tag", ""), "base": story.get("base", "")}
         clips = story_dir / "clips.json"
-        self.clip_ids = {c["id"] for c in json.loads(clips.read_text())} if clips.exists() else set()
+        self.clips = json.loads(clips.read_text()) if clips.exists() else []
+        self.clip_ids = {c["id"] for c in self.clips}
         self.clip_ids |= {p.name.split(".")[0] for p in (story_dir / ".media").glob("*.webm")}
         self._ui: dict[str, bool] = {}
 
@@ -741,6 +748,7 @@ class Checker:
         if r.errors:
             return r
         self.check_text()
+        self.check_clips()
         self.check_highlights()
         self.check_prs()
         self.check_labels()
@@ -777,6 +785,16 @@ class Checker:
                         self.r.warn(where, f"{self.cfg.tone}가 아니에요: …{tail[-20:]}")
             elif len(t) > 60:
                 self.r.warn(where, f"제목·라벨이 길어요 ({len(t)}자) — 60자 안으로")
+
+    def check_clips(self) -> None:
+        """녹화가 쓰는 파일(실제 자료·목 응답·첨부)이 있는지 — 실데이터는 저장소 밖(.media/)이라 빠지기 쉽다."""
+        for c in self.clips:
+            paths = [c[k] for k in ("initScript", "initData") if c.get(k)]
+            paths += [f for st in c.get("steps", []) for f in st.get("upload", [])]
+            for rel in paths:
+                if not (self.dir / rel).exists():
+                    hint = " — 실제 자료는 커밋하지 않으니 원본을 받아 같은 자리에 둬요" if ".media" in rel else ""
+                    self.r.error(f"clips.{c.get('id', '?')}", f"{rel}이 없어요{hint}")
 
     def check_highlights(self) -> None:
         r, hs = self.r, self.story.get("highlights", [])
@@ -986,7 +1004,7 @@ def init(cfg: Config, tag: str, base: str | None, force: bool) -> None:
         }],
         "minor": [],
         "notes": [{"title": "이 문서의 화면에 대해", "body": [
-            "이미지와 영상은 저장소에 커밋된 스크린샷과 녹화예요. 실제 사용자 데이터는 없어요.", *cfg.notes]}],
+            "TODO: 화면 속 자료가 실제 사례(식별 정보 가림)인지, 테스트 데이터인지 적어요.", *cfg.notes]}],
         "downloadNote": "",
     }
     story_path.write_text(json.dumps(story, ensure_ascii=False, indent=2) + "\n")

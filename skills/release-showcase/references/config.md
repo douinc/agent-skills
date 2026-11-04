@@ -8,6 +8,8 @@
   "storiesDir": ".release-showcase/stories",
   "brandColor": "#1657b9",              // 강조색 — 밝은 변형은 자동으로 만든다
   "tone": "해요체",                     // 해요체 | 합니다체 | off — 문장 끝 검사
+  "frameWidth": 420,                    // 그림 틀 최대 폭(px) — 좁은 창 앱은 실제 창 폭, 웹 화면은 크게
+  "videoWidth": 520,                    // 영상 틀 최대 폭(px)
   "denyPattern": "vendor-a|vendor-b",   // 문서에 쓰지 않을 말(정규식, 대소문자 무시). 맞으면 오류
   "denyPatternFrom": {                  // 저장소에 이미 금칙 목록이 있으면 거기서 읽는다(denyPattern과 합침)
     "file": "app/scripts/lib/vendor-names.ts",
@@ -51,7 +53,7 @@
   "url": "http://127.0.0.1:{port}/",    // 녹화 기준 주소. clip의 path·query가 여기 붙는다
   "ready": "#root main",                // 이 선택자가 보이면 녹화 시작 (첫 로딩 구간은 잘라낸다)
   "viewport": { "width": 1280, "height": 800 },
-  "scale": 1,                           // deviceScaleFactor — 작은 창은 2로 선명하게
+  "scale": 1,                           // 장치 배율 — 작은 창은 2로 선명하게. 영상도 이 배율의 픽셀로 찍는다
   "browserArgs": []                     // 예: 마이크가 필요한 화면은 가짜 장치 플래그
 }
 ```
