@@ -27,8 +27,8 @@ python3 <SKILL_DIR>/scripts/openrouter_media.py models --modality transcription
 | 단어 타이밍 | `elevenlabs/scribe-v2` | `openai/whisper-large-v3`, 로컬 `npx hyperframes transcribe <wav> --model small --language ko` | `.en` 모델은 한국어를 영어로 번역해 버리므로 쓰지 않는다 |
 | 배경·텍스처 이미지 | `google/gemini-3.1-flash-image` | `bytedance-seed/seedream-5-0-pro`, `openai/gpt-image-2` | `/api/v1/images`. 한글 글자는 이미지에 넣지 않는다. Gemini는 평범한 프롬프트도 저작권 오탐(`IMAGE_RECITATION`)으로 막을 때가 있다. 그러면 프롬프트를 바꾸거나 Seedream을 쓴다 |
 | b-roll 영상 | `google/veo-3.1-fast`(4·6·8초) | `google/veo-3.1-lite`(720p 무음 초당 약 $0.03), `kwaivgi/kling-v3.0-std`, `alibaba/wan-3.0`(2–30초) | 비동기 작업이다. 소리는 끄고 받는다. **ZDR 계정에서는 쓸 수 없다**(아래 참고) |
-| 효과음 | `bytedance-seed/seed-audio-1-0`(`/audio/speech`에 음성 없이 설명문) | HyperFrames `media-use` 번들 효과음 | 스크립트에는 없다. 필요하면 `measure`처럼 직접 호출한다 |
-| 음악 | 검증 안 됨(`google/lyria-3-*`는 요청 형식 문서가 없다) | 사용자가 준 파일, 무음 | 확인 전에는 쓰지 않는다 |
+| 효과음 | ElevenLabs 직접 호출(`elevenlabs_audio.py sfx`, 사용자가 승인했을 때) | HyperFrames `media-use` 번들 효과음 | OpenRouter의 `bytedance-seed/seed-audio-1-0`은 ZDR 계정에서 자주 막힌다. 이 스크립트에는 넣지 않았다. `elevenlabs.md` 참고 |
+| 음악 | ElevenLabs 직접 호출(`elevenlabs_audio.py music`, 사용자가 승인했을 때) | 사용자가 준 파일, 무음 | OpenRouter 음악 모델(`google/lyria-3-*`)은 요청 형식 문서가 없고 ZDR 계정에서 막힌다. 쓰지 않는다 |
 
 ### 실측 메모
 
@@ -47,7 +47,7 @@ python3 <SKILL_DIR>/scripts/openrouter_media.py models --modality transcription
 python3 <SKILL_DIR>/scripts/openrouter_media.py models --modality speech --zdr --grep ko-KR
 ```
 
-2026-10-15 기준으로 기본 음성(MAI)·STT(scribe-v2)·이미지(Gemini, Seedream) 모델은 모두 ZDR을 지원한다. 영상 생성 모델은 하나도 지원하지 않는다. ZDR 계정에서는 b-roll을 생성하지 말고, 사용자가 준 영상이나 코드로 그린 장면을 쓴다.
+2026-10-15 기준으로 기본 음성(MAI)·STT(scribe-v2)·이미지(Gemini, Seedream) 모델은 모두 ZDR을 지원한다. 영상 생성 모델은 하나도 지원하지 않는다. ZDR 계정에서는 b-roll을 생성하지 말고, 사용자가 준 영상이나 코드로 그린 장면을 쓴다. 효과음·음악 모델도 대부분 막히므로, 효과음·음악은 사용자에게 물어 ElevenLabs 경로(`elevenlabs.md`)로 만든다.
 
 ### 가격
 
@@ -86,8 +86,8 @@ python3 <SKILL_DIR>/scripts/openrouter_media.py models --modality speech --zdr -
    ```bash
    node <HF>/<workflow>/scripts/audio.mjs sync-durations --audio-meta ./audio_meta.json --storyboard ./STORYBOARD.md
    ```
-6. **음악을 넣는다.** 사용자가 준 파일이면 `assets/`에 두고 `audio_meta.json`에 `"bgm": { "path": "assets/…", "source": "host" }`를 쓰고, 스토리보드에는 `music: none`을 둔다. 음악이 없으면 `music: none`만 둔다.
-7. **효과음을 넣는다.** 스토리보드의 `sfx:` 큐가 있으면 워크플로의 `fetch-sfx`를 그대로 쓴다. `audio_engine_meta.json`에 음성이 있으므로 이 패스는 음성을 지우지 않는다. 직접 만든 효과음은 `sfx` 항목에 `"source": "host"`로 넣는다.
+6. **음악을 넣는다.** ElevenLabs로 만들면 `elevenlabs_audio.py music … --project .`가 아래 `bgm` 항목을 대신 써 준다(`elevenlabs.md`). 사용자가 준 파일이면 `assets/`에 두고 `audio_meta.json`에 `"bgm": { "path": "assets/…", "source": "host" }`를 쓰고, 스토리보드에는 `music: none`을 둔다. 음악이 없으면 `music: none`만 둔다.
+7. **효과음을 넣는다.** 스토리보드의 `sfx:` 큐가 있으면 워크플로의 `fetch-sfx`를 그대로 쓴다. `audio_engine_meta.json`에 음성이 있으므로 이 패스는 음성을 지우지 않는다. 직접 만든 효과음은 `sfx` 항목에 `"source": "host"`로 넣는다. ElevenLabs로 만들면 `elevenlabs_audio.py sfx … --project . --frame N --offset S`가 등록해 준다.
 8. **자막을 만든다.** 워크플로의 `captions.mjs`가 `voices[].words`를 읽는다. 바로 뒤에 `python3 <SKILL_DIR>/scripts/ko_captions.py --project .`로 구절 단위로 다시 묶는다. 그다음 단계는 워크플로를 따른다.
 
 ## 그래픽형 화면 문구의 최소 노출 시간
