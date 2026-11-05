@@ -1,10 +1,10 @@
 ---
 name: intro-video
-description: "회사·제품·서비스·기능 소개 영상을 HyperFrames(HTML→MP4)로 만든다. HyperFrames 공식 워크플로 위에 브리프 계약(하는 일과 가치), 브랜드 토큰, 사실만 쓰는 한국어 카피, OpenRouter 한국어 내레이션·자막·생성 소스, 스틸 검수와 렌더 승인 게이트를 씌운다. '회사 소개 영상', '제품 소개 영상', '앱 소개 영상', '서비스·기능 소개 영상', '홍보 영상', '런칭 영상', '브랜드 필름', '모션 그래픽 인트로', '로고 스팅', '쇼릴', 'intro video', 'promo video', 'launch video', 'explainer', 'motion graphics'처럼 소개·홍보 영상을 새로 만들거나 고칠 때 반드시 사용한다. 내레이션 없는 15–40초 모션 그래픽과 한국어 내레이션이 있는 30–90초 소개 영상을 모두 다룬다. HyperFrames의 /hyperframes 인터뷰보다 먼저 쓴다. 이 스킬이 브리프를 BRIEF.md로 넘기면 해당 워크플로가 질문 없이 이어 간다. 실사 촬영 편집, 토킹헤드 자막, 기존 영상 컷 편집, 웹페이지용 CSS 애니메이션에는 쓰지 않는다."
+description: "회사·제품·서비스·기능 소개 영상을 HyperFrames(HTML→MP4)로 만든다. HyperFrames 공식 워크플로 위에 브리프 계약(하는 일과 가치), 브랜드 토큰, 사실만 쓰는 한국어 카피, OpenRouter 한국어 내레이션·자막·생성 소스, ElevenLabs 효과음·배경음악(선택), 스틸 검수와 렌더 승인 게이트를 씌운다. '회사 소개 영상', '제품 소개 영상', '앱 소개 영상', '서비스·기능 소개 영상', '홍보 영상', '런칭 영상', '브랜드 필름', '모션 그래픽 인트로', '로고 스팅', '쇼릴', 'intro video', 'promo video', 'launch video', 'explainer', 'motion graphics'처럼 소개·홍보 영상을 새로 만들거나 고칠 때 반드시 사용한다. 내레이션 없는 15–40초 모션 그래픽과 한국어 내레이션이 있는 30–90초 소개 영상을 모두 다룬다. HyperFrames의 /hyperframes 인터뷰보다 먼저 쓴다. 이 스킬이 브리프를 BRIEF.md로 넘기면 해당 워크플로가 질문 없이 이어 간다. 실사 촬영 편집, 토킹헤드 자막, 기존 영상 컷 편집, 웹페이지용 CSS 애니메이션에는 쓰지 않는다."
 metadata:
   author: initred
   email: initred@dou.so
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # intro-video — 소개 영상 하네스
@@ -16,17 +16,18 @@ HyperFrames 공식 워크플로가 엔진, 디자인 프리셋, 프레임 빌드
 1. **브리프 계약:** 칸이 비어 있으면 코드를 쓰지 않는다.
 2. **한국어 카피:** 입력에 있는 사실만 쓰고, 메타 문장은 쓰지 않는다.
 3. **OpenRouter 내레이션·자막:** HyperFrames 기본 음성은 한국어가 없거나 별도 로그인이 필요하다.
+   효과음·배경음악은 OpenRouter ZDR 설정에 자주 막히므로, ElevenLabs 키를 쓸지 사용자에게 묻는다.
 4. **스틸 게이트와 렌더 게이트:** 콘택트 시트를 읽기 전에는 렌더하지 않고, 렌더는 승인을 받은 뒤에만 한다.
 
 ## 진행 체크리스트
 
 아래를 할 일 목록으로 만들고, 사용자 승인을 기다리는 경우가 아니면 열린 항목이 남은 채로 턴을 끝내지 않는다. 긴 작업에서는 모델이 중간 보고만 하고 멈추는 일이 있다.
 
-- [ ] 0 준비: doctor, HyperFrames 스킬, 키
-- [ ] 1 브리프 확정
+- [ ] 0 준비: doctor, HyperFrames 스킬, OpenRouter 키
+- [ ] 1 브리프 확정(효과음·음악을 쓰면 ElevenLabs 키 사용 여부 질문 포함)
 - [ ] 2 라우팅 → `init` → `BRIEF.md`
 - [ ] 3 워크플로 진행(아래 덧씌우는 규칙 적용)
-- [ ] 4 내레이션(내레이션형만)
+- [ ] 4 내레이션(내레이션형만), 효과음·음악
 - [ ] 5 스틸 게이트
 - [ ] 6 렌더 승인 → 렌더 → `verify_mp4.py`
 - [ ] 7 납품 보고
@@ -43,6 +44,7 @@ HyperFrames 공식 워크플로가 엔진, 디자인 프리셋, 프레임 빌드
   - `preview --background`는 끌 때까지 서버를 띄워 둔다.
 - 한 프로젝트 안에서는 CLI 버전을 하나로 쓴다(`init`이 `package.json`에 적은 버전, 예: `npx hyperframes@0.8.160`).
 - 내레이션이나 생성 이미지·영상을 쓰면 `python3 <SKILL_DIR>/scripts/openrouter_media.py key-check`로 OpenRouter 키를 확인한다. 키 값은 나오지 않고 출처·한도·만료만 나온다. 키는 스크립트가 키체인·키 파일 등에서 직접 찾으니, `.env`를 불러오거나 키를 출력하지 않는다. 키가 없으면 스크립트의 준비 안내를 사용자에게 전하고(키를 채팅으로 받지 않는다), 그동안 키가 필요 없는 단계를 진행한다. 규칙 전체는 `references/openrouter.md` "키"에 있다.
+- ElevenLabs 키는 1단계에서 사용자가 쓰기로 했을 때만 `python3 <SKILL_DIR>/scripts/elevenlabs_audio.py key-check`로 확인한다. 규칙은 OpenRouter 키와 같다. 없으면 스크립트의 준비 안내(키 생성 → 권한·크레딧 한도 → 키체인 저장 → key-check)를 전한다. 자세한 내용은 `references/elevenlabs.md` "키"에 있다.
 
 ## 1. 브리프
 
@@ -55,6 +57,15 @@ npx hyperframes capture "<URL>" -o "videos/.precapture-<project>/capture" --json
 ```
 
 `capture/extracted/visible-text.txt`에서 메시지와 사실을 고른다. `init` 직후 이 `capture/` 폴더를 `videos/<project>/capture/`로 옮긴다. 워크플로 Step 1은 게이트 파일이 이미 있으면 다시 캡처하지 않고 그 결과를 쓴다.
+
+### 효과음·배경음악 경로 질문
+
+소리 칸이 "효과음 켬"이거나 음악을 새로 만들어야 하면, 브리프 질문과 함께 **ElevenLabs API 키를 쓸지** 묻는다. OpenRouter 계정이 ZDR(데이터 무보존)을 강제하면 효과음·음악 모델이 대부분 거절되기 때문이다. 사용자가 음원 파일을 주고 효과음을 끄면 묻지 않는다.
+
+- 질문 문구와 선택지, 데이터 전송 고지는 `references/elevenlabs.md` "사용자에게 먼저 묻는다"를 그대로 쓴다. AskUserQuestion이 있으면 그것으로 묻는다.
+- "사용"이면 0단계처럼 `elevenlabs_audio.py key-check`를 돌린다. 키가 없으면 키 설정 안내를 전하고, 저장될 때까지 키가 필요 없는 단계를 먼저 진행한다.
+- "쓰지 않음"이면 번들 효과음(`fetch-sfx`), 사용자 음원, 무음 중에서 고른다.
+- 답은 `BRIEF.md` Customizations에 적는다. 다음 수정에서 다시 묻지 않는다.
 
 게이트: 메시지 한 문장, 형식, 길이, 화면 비가 확정됐다. 대상이 하는 일 3–5가지가 원천과 함께 정리됐다. 화면에 올라갈 모든 사실에 원천이 있다.
 
@@ -87,7 +98,7 @@ npx hyperframes init "videos/<project>" --non-interactive --example=blank --skil
 | Capture | 1단계에서 미리 캡처했으면 그 결과를 쓴다. 캡처 텍스트는 카피의 사실 원천이 된다 |
 | 디자인 시스템(`build-frame`) | 실행 전에 브리프의 브랜드 색(6자리 hex)과 **브랜드** 서체 이름을 `capture/extracted/tokens.json`의 `colors`·`fonts`에 넣는다. 한글 짝 서체는 넣지 않는다(굵기 계산이 틀어지고 파일이 중복 복사된다). 실행 후 아래 "색 역할 확인"과 "한글 서체 연결"을 한다 |
 | 스토리보드·원고 | 아래 "한국어 카피" 규칙과 "장면이 하는 일" 점검. 스토리보드 승인 게이트는 그대로 둔다. 글자만 있는 프레임은 `asset_candidates:`를 비워 둔다(설명 문구를 쓰면 파일명으로 읽혀 404 경고가 난다) |
-| Audio(Step 3.1) | **4단계 OpenRouter 내레이션으로 대체한다.** 워크플로의 `audio.mjs` 생성 명령은 실행하지 않는다(음성을 덮어쓴다). 그래픽형이면 무음 표시(`music: none`, `SCRIPT.md` 없음) 또는 효과음만 둔다 |
+| Audio(Step 3.1) | **4단계 OpenRouter 내레이션으로 대체한다.** 워크플로의 `audio.mjs` 생성 명령은 실행하지 않는다(음성을 덮어쓴다). 그래픽형이면 무음 표시(`music: none`, `SCRIPT.md` 없음) 또는 효과음만 둔다. 효과음·음악을 ElevenLabs로 만들기로 했으면 `references/elevenlabs.md`로 만들어 `source: host`로 등록한다 |
 | 프레임 빌드 | 워크플로의 `frame-packets`를 돌린 직후, 작업자 역할 파일에 모션 규칙을 덧붙인다: `cat <SKILL_DIR>/references/motion-rules.md >> .hyperframes/frame-packets/_role.md`(패킷을 다시 만들면 다시 붙인다). 워크플로가 주입하는 장면 전환(`transitions.mjs`)의 이징은 그대로 둔다 |
 | 자막(`captions.mjs build`) 뒤 | 한국어 자막을 구절 단위로 다시 묶는다: `python3 <SKILL_DIR>/scripts/ko_captions.py --project .`. HyperFrames는 쉼과 단어 수로 끊어 "주식회사 / 도우입니다."처럼 구절을 가른다. 자막을 다시 만들 때마다 다시 돌린다 |
 | 조립(`assemble-index`) 뒤 | 스틸에서 영상 바탕이 브리프 bg인지 본다. 장면 전환 사이로 비치는 바탕이 다른 색이면 `frame.md`의 색 역할 확인부터 다시 한다 |
@@ -140,7 +151,8 @@ mkdir -p assets/fonts && for w in Regular SemiBold Bold; do curl -fsSL -o "asset
 3. `openrouter_media.py tts`로 줄별 WAV를 만든다. 각 줄은 −14 LUFS로 맞춰지고 단어 타이밍이 `audio_meta.json`에 채워진다. 쓴 모델과 음성은 `BRIEF.md` Customizations에도 적는다(다른 오디오 패스가 `audio_meta.json`의 출처 필드를 지울 수 있다).
 4. 유사도 경고가 뜬 줄을 고친다. 전체가 빠르면 `--speed 0.9`로 다시 만든다(MAI가 지원한다).
 5. `audio.mjs sync-durations`로 프레임 길이를 실제 음성 길이에 맞춘다.
-6. 음악·효과음을 넣고, 자막을 만든 뒤 `ko_captions.py`로 다시 묶는다.
+6. 음악·효과음을 넣는다. ElevenLabs를 쓰기로 했으면 `elevenlabs_audio.py sfx`·`music`으로 만든다(`references/elevenlabs.md`). 아니면 사용자 음원이나 `fetch-sfx`를 쓴다.
+7. 자막을 만든 뒤 `ko_captions.py`로 다시 묶는다.
 
 ```bash
 python3 <SKILL_DIR>/scripts/openrouter_media.py tts --project . --model <모델> --voice <음성>
@@ -148,7 +160,7 @@ python3 <SKILL_DIR>/scripts/openrouter_media.py tts --project . --model <모델>
 
 원고 문체는 `ko-natural`로 린트한다. 예: `lint.py <원고.txt> --type doc --tone 합니다체`, 어투는 브리프를 따른다. 한 원고 안에서 합니다체와 해요체를 섞으면 오류로 잡힌다.
 
-그래픽형도 화면 문구의 최소 노출 시간을 `openrouter_media.py measure`로 잴 수 있다(`references/motion-rules.md` "페이싱").
+그래픽형은 내레이션 없이 위 6번(효과음·음악)만 한다. 그래픽형도 화면 문구의 최소 노출 시간을 `openrouter_media.py measure`로 잴 수 있다(`references/motion-rules.md` "페이싱").
 
 ## 5. 스틸 게이트
 
@@ -195,20 +207,23 @@ npx hyperframes snapshot --at <시각 목록>
 - 콘택트 시트 경로와 프레임 id 목록. 다음 수정 요청을 프레임 단위로 받는다
 - 프로젝트 폴더(`videos/<project>/`). 다음 수정은 프레임 파일을 고치고 같은 게이트를 다시 거친다
 - 지어내지 않은 것: `[확인 필요]`로 남긴 사실, 생성 이미지·영상과 그 모델
-- 비용과 시간은 둘로 나눠 적는다. 모델·OpenRouter 사용액이 하나, 렌더 시간이 하나다
+- 비용과 시간은 나눠 적는다. OpenRouter 사용액, ElevenLabs 크레딧 사용량과 플랜(썼다면), 렌더 시간이다
 
 ## 하지 않는 것
 
 - 바이럴 한 줄 쇼릴 프롬프트("make a dynamic 15-second motion graphics video… go all out")를 워크플로로 쓰지 않는다. 렌더가 도는지 보는 연기 테스트로만 쓴다.
 - 로고를 그리거나 생성하지 않는다. 실제 제품 UI 대신 생성 이미지를 쓰지 않는다. 생성 이미지에 한글 글자를 넣지 않는다.
 - 권리가 불분명한 음원이나 제3자 화면을 쓰지 않는다.
-- API 키를 출력하거나 셸에 불러오지 않는다. 파일·로그·`BRIEF.md`·서브에이전트 지시에도 남기지 않는다. 키는 `openrouter_media.py`만 다룬다.
+- API 키를 출력하거나 셸에 불러오지 않는다. 파일·로그·`BRIEF.md`·서브에이전트 지시에도 남기지 않는다. OpenRouter 키는 `openrouter_media.py`만, ElevenLabs 키는 `elevenlabs_audio.py`만 다룬다.
+- 사용자가 ElevenLabs 사용을 승인하지 않았으면 키가 저장돼 있어도 `elevenlabs_audio.py`를 부르지 않는다.
 
 ## 리소스
 
 - `references/brief.md`: 브리프 칸, 기본값, `BRIEF.md` 형식. 1단계에서 읽는다
 - `references/motion-rules.md`: 결정성, 이징, 페이싱, 금지 목록, 색·서체, 한글 타이포, 로고, 소리. 빌드와 스틸 게이트에서 읽는다
 - `references/openrouter.md`: 모델 표, 내레이션 절차, 생성 이미지·영상 규칙. 4단계와 생성 소스가 필요할 때 읽는다
+- `references/elevenlabs.md`: ElevenLabs 사용 질문, 키 설정, 효과음·음악 생성과 `audio_meta.json` 등록, 라이선스. 1단계 질문과 효과음·음악을 만들 때 읽는다
+- `scripts/elevenlabs_audio.py`: `key-check`·`sfx`·`music`(표준 라이브러리 + ffmpeg)
 - `scripts/openrouter_media.py`: `models`·`tts`·`measure`·`stt`·`image`·`video`(표준 라이브러리 + ffmpeg)
 - `scripts/ko_captions.py`: HyperFrames 자막을 `SCRIPT.md`의 ` / ` 경계(없으면 문장부호와 어절 수)로 다시 묶는다
 - `scripts/verify_mp4.py`: 렌더 결과를 브리프 값과 대조한다(코덱, 크기, fps, 길이, faststart, 라우드니스). 종료 코드 0이면 납품 가능이다
