@@ -99,6 +99,13 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/intro-video"]
+    },
+    {
+      "name": "release-showcase",
+      "description": "정식 릴리스의 변경을 이전·이후 스크린샷, 클릭 흐름 녹화 영상, 비교·단계·탭·흐름도 컴포넌트로 보여 주는 파일 하나짜리 HTML 릴리스 문서를 만들고 기계 검사·화면 검수까지 한다",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/release-showcase"]
     }
   ]
 }
