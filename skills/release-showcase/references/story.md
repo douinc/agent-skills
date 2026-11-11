@@ -15,6 +15,17 @@
   "date": "2026-03-02", "channel": "production",
   "tagline": "한 문장 요약 — 사용자가 얻는 것",
   "context": "이 문서가 어느 범위를 다루는지 한두 문장",
+  "metrics": {                        // (선택) 맨 위 숫자 요약 — 항목마다 얼마나 좋아졌는지
+    "title": "숫자로 보면",            // 기본값
+    "caption": "무엇으로 어떻게 쟀는지 한 문장",
+    "items": [{
+      "label": "반복 지출",            // 항목 이름 (하이라이트의 short와 맞추면 읽기 쉽다)
+      "what": "한 달 입력 횟수",        // 무엇을 쟀는지
+      "before": "12번", "after": "1번", // before는 새로 생긴 것이면 뺀다
+      "for": "recurring",             // (선택) 누르면 갈 하이라이트 id
+      "note": "월세·구독료 12건 기준"   // (선택) 조건·범위
+    }]
+  },
   "audience": [{ "who": "처음 쓰는 분", "what": "할 일이 있는지 없는지 먼저" }],
   "highlights": [{
     "id": "recurring",                // 영문 kebab — 목차 링크·검수 화면 이름
@@ -59,7 +70,7 @@
 | `compare` | 이전·이후 비교 (나란히·한쪽 보기 토글) | `before`, `after`(각각 그림, `label`로 버전 표시를 바꿀 수 있음), `caption` |
 | `steps` | 흐름을 단계별로 넘겨 보기 | `items: [{ label, title, caption, …그림 }]` |
 | `tabs` | 같은 화면의 상태별 모습 | `items: [{ label, caption, …그림 }]` |
-| `video` | 녹화 영상 + 챕터 | `clip`(clips.json id 또는 `.media/<id>.webm`), `poster`(그림) |
+| `video` | 녹화 영상 + 챕터. 멈춘 채로 시작한다 | `clip`(clips.json id 또는 `.media/<id>.webm`), `poster`(틀기 전에 보일 그림 — 없으면 영상 첫 장면) |
 | `flow` | 이전·이후 절차 비교 흐름도 | `lanes: [{ title, tone: bad\|good, steps: [{ text, tone: pain\|win\|skip }] }]`, `caption` |
 | `stack` | 위 블록 여러 개를 세로로 | `items: [media…]` |
 

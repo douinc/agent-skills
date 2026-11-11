@@ -27,7 +27,7 @@ function arg(name) {
   return i === -1 ? undefined : process.argv[i + 1]
 }
 
-/** 끝까지 천천히 내려 지연 동작(영상 자동 재생·목차 표시)을 모두 깨운다 */
+/** 끝까지 천천히 내려 지연 동작(목차 표시 등)을 모두 깨운다. 영상은 이때도 저절로 틀어지면 안 된다 */
 async function scrollThrough(page) {
   const height = await page.evaluate(() => document.documentElement.scrollHeight)
   for (let y = 0; y < height; y += 600) {
@@ -95,6 +95,9 @@ async function videoProblems(page) {
       out.push(`영상 ${i + 1}: 재생할 수 없어요 (${state.error ?? `길이 ${state.duration}`})`)
       continue
     }
+    // 문서를 훑기만 했는데 틀어져 있으면 안 된다 — 읽는 사람이 누를 때만 튼다
+    const autoplayed = await video.evaluate((v) => !v.paused || v.currentTime > 0)
+    if (autoplayed) out.push(`영상 ${i + 1}: 누르지 않았는데 재생돼요 — 영상은 멈춘 채로 시작해야 해요`)
     // 메타데이터만으로는 부족하다 — 실제로 틀어 시간이 흐르는지 본다(코덱을 못 풀면 여기서 멈춘다)
     const played = await video.evaluate(async (v) => {
       v.muted = true
@@ -181,7 +184,21 @@ async function interactionProblems(page) {
     await zoom.click()
     if (!(await page.locator('.lightbox.on').count()))
       out.push('그림을 눌러도 크게 보기가 열리지 않아요')
+    else {
+      // 크게 보기인데 작으면 쓸모가 없다 — 화면의 가로나 세로 중 한쪽은 거의 채우거나, 원래 크기의 1.5배까지 키워야 한다
+      const size = await page.locator('.lightbox img').evaluate(async (img) => {
+        if (!img.complete) await new Promise((r) => img.addEventListener('load', r, { once: true }))
+        const box = img.getBoundingClientRect()
+        return { w: box.width, h: box.height, nw: img.naturalWidth, vw: innerWidth, vh: innerHeight }
+      })
+      const fills = size.w >= size.vw * 0.85 || size.h >= size.vh * 0.85
+      if (!fills && size.w < size.nw * 1.45)
+        out.push(
+          `크게 보기 그림이 작아요 (${Math.round(size.w)}×${Math.round(size.h)}, 화면 ${size.vw}×${size.vh})`
+        )
+    }
     await page.keyboard.press('Escape')
+    if (await page.locator('.lightbox.on').count()) out.push('크게 보기가 Esc로 닫히지 않아요')
   }
   return out
 }
