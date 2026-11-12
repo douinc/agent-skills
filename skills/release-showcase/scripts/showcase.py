@@ -251,6 +251,22 @@ class Media:
         return base64.b64encode(source.read_bytes()).decode(), "video/webm", chapters
 
 
+    def clip_poster(self, clip_id: str) -> str | None:
+        """영상의 첫 장면 그림. 영상은 저절로 틀지 않으므로 틀기 전에 보일 장면이 필요하다(iOS는 그림이 없으면 빈 화면이다)."""
+        sources = [self.media_dir / f"{clip_id}{ext}" for ext in (".mp4", ".webm", ".raw.webm")]
+        source = next((p for p in sources if p.exists()), None)
+        if source is None or not shutil.which("ffmpeg"):
+            return None
+        out = self.media_dir / f"{clip_id}.poster.jpg"
+        if not out.exists() or out.stat().st_mtime < source.stat().st_mtime:
+            done = subprocess.run(
+                ["ffmpeg", "-loglevel", "error", "-y", "-i", str(source), "-frames:v", "1", "-q:v", "3", str(out)]
+            )
+            if done.returncode != 0 or not out.exists():
+                return None
+        return data_uri(out.read_bytes(), "image/jpeg")
+
+
 def h264_available() -> bool:
     if not shutil.which("ffmpeg"):
         return False
@@ -526,7 +542,9 @@ class Renderer:
 
     def video(self, m: dict) -> str:
         b64, mime, chapters = self.media.clip(m["clip"])
-        poster = f' poster="{self.media.image(m["poster"])}"' if m.get("poster") else ""
+        # poster를 따로 주지 않으면 영상 첫 장면을 쓴다 — 저절로 틀지 않으니 멈춘 채로도 무엇이 나올지 보여야 한다
+        poster_uri = self.media.image(m["poster"]) if m.get("poster") else self.media.clip_poster(m["clip"])
+        poster = f' poster="{poster_uri}"' if poster_uri else ""
         chap = "".join(
             f'<li><button type="button" data-t="{c["t"]:.2f}"><time>{int(c["t"]) // 60}:{int(c["t"]) % 60:02d}</time>'
             f"<span>{self.inline(c['caption'])}</span></button></li>"
@@ -541,6 +559,23 @@ class Renderer:
   </div>
   <ol class="chapters">{chap}</ol>
 </div>"""
+
+    def metrics(self, m: dict | None) -> str:
+        """맨 위 숫자 요약 — 항목마다 무엇을 쟀고 이전 → 이후가 얼마인지. `for`가 있으면 그 하이라이트로 간다."""
+        if not m or not m.get("items"):
+            return ""
+        cards = []
+        for it in m["items"]:
+            before = f'<span class="m-before">{self.inline(it["before"])}</span><span class="m-arrow">→</span>' if it.get("before") else ""
+            what = f'<span class="m-what">{self.inline(it["what"])}</span>' if it.get("what") else ""
+            note = f'<span class="m-note">{self.inline(it["note"])}</span>' if it.get("note") else ""
+            inner = (f'<span class="m-label">{self.inline(it["label"])}</span>{what}'
+                     f'<span class="m-value">{before}<b>{self.inline(it["after"])}</b></span>{note}')
+            cards.append(f'<a class="metric" href="#{html.escape(it["for"])}">{inner}</a>' if it.get("for")
+                         else f'<div class="metric">{inner}</div>')
+        caption = f'<p class="metrics-caption">{self.inline(m["caption"])}</p>' if m.get("caption") else ""
+        title = self.inline(m.get("title", "숫자로 보면"))
+        return f'<section class="metrics" aria-label="숫자 요약"><h2>{title}</h2><div class="metric-grid">{"".join(cards)}</div>{caption}</section>'
 
     def flow(self, m: dict) -> str:
         lanes = []
@@ -641,6 +676,7 @@ def build(cfg: Config, story_dir: Path, out: Path, record: bool) -> Path:
         icon = f'<img src="{media.image({"file": app.icon})}" alt="">'
     audience = "".join(f'<div class="aud"><h3>{ink(a["who"])}</h3><p>{ink(a["what"])}</p></div>'
                        for a in story.get("audience", []))
+    metrics = r.metrics(story.get("metrics"))
     downloads = r.downloads(url, assets)
     toc = "".join(f'<a href="#{html.escape(h["id"])}">{ink(h.get("short", h["title"]))}</a>' for h in story["highlights"])
     toc += '<a href="#more">그 밖에</a>' if story.get("minor") else ""
@@ -651,7 +687,7 @@ def build(cfg: Config, story_dir: Path, out: Path, record: bool) -> Path:
         "TITLE": html.escape(story["title"]), "ICON": icon, "APP": html.escape(app.label),
         "VERSION": html.escape(labels["tag"]), "DATE": html.escape(story["date"]),
         "CHANNEL": html.escape(story.get("channel", "production")), "TAGLINE": ink(story["tagline"]),
-        "CONTEXT": ink(story.get("context", "")), "AUDIENCE": audience, "TOC": toc,
+        "CONTEXT": ink(story.get("context", "")), "METRICS": metrics, "AUDIENCE": audience, "TOC": toc,
         "HIGHLIGHTS": "".join(r.highlight(i + 1, h) for i, h in enumerate(story["highlights"])),
         "MINOR": r.minor(story["minor"]) if story.get("minor") else "",
         "NOTES": f'<section class="notes" id="notes"><h2 class="sec">팀 참고</h2>{notes}</section>' if notes else "",
@@ -720,6 +756,10 @@ def prose(story: dict) -> list[tuple[str, str, bool]]:
                                          ("downloadNote", story.get("downloadNote", ""), True)]
     for i, a in enumerate(story.get("audience", [])):
         out += [(f"audience[{i}].who", a.get("who", ""), False), (f"audience[{i}].what", a.get("what", ""), True)]
+    metrics = story.get("metrics") or {}
+    out += [("metrics.caption", metrics.get("caption", ""), True)]
+    for i, it in enumerate(metrics.get("items", [])):
+        out += [(f"metrics[{i}].{key}", it.get(key, ""), False) for key in ("label", "what", "note")]
     for h in story.get("highlights", []):
         hid = h.get("id", "?")
         out += [(f"{hid}.title", h.get("title", ""), False), (f"{hid}.lead", h.get("lead", ""), True)]
@@ -770,6 +810,7 @@ class Checker:
         self.check_text()
         self.check_clips()
         self.check_highlights()
+        self.check_metrics()
         self.check_prs()
         self.check_labels()
         return r
@@ -905,6 +946,25 @@ class Checker:
                     self.check_media(f"{where}.stack[{i}]", it)
                 else:
                     self.check_image(f"{where}.{kind}[{i}]", it)
+
+    def check_metrics(self) -> None:
+        """맨 위 숫자 요약: 항목마다 이름과 이후 값이 있고, `for`는 실제 하이라이트를 가리킨다."""
+        m = self.story.get("metrics")
+        if not m:
+            return
+        items = m.get("items", [])
+        if not 2 <= len(items) <= 8:
+            self.r.warn("metrics", f"{len(items)}개 — 2~8개가 한눈에 들어와요")
+        ids = {h.get("id") for h in self.story.get("highlights", [])}
+        for i, it in enumerate(items):
+            where = f"metrics[{i}]"
+            for key in ("label", "after"):
+                if not str(it.get(key, "")).strip():
+                    self.r.error(where, f"{key}가 비어 있어요")
+            if it.get("for") and it["for"] not in ids:
+                self.r.error(where, f"for '{it['for']}'에 해당하는 하이라이트가 없어요")
+            if not re.search(r"\d", f"{it.get('before', '')}{it.get('after', '')}"):
+                self.r.warn(where, "숫자가 없어요 — 잰 값을 넣거나 이 항목을 빼요")
 
     def check_prs(self) -> None:
         """하이라이트에 단 PR이 태그에 실제로 들어 있는지 — 머지됐지만 아직 안 나간 기능을 막는다."""
