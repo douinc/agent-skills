@@ -101,6 +101,17 @@ async function videoProblems(page) {
     // 메타데이터만으로는 부족하다 — 실제로 틀어 시간이 흐르는지 본다(코덱을 못 풀면 여기서 멈춘다)
     const played = await video.evaluate(async (v) => {
       v.muted = true
+      // scrollThrough가 페이지의 자동 재생을 켜 영상이 이미 끝까지 갔을 수 있다. 끝에서 play()하면 바로 다시
+      // 끝나 시간이 흐르지 않으니 처음으로 되감고 잰다.
+      v.pause()
+      if (v.currentTime !== 0) {
+        const seeked = new Promise((r) => {
+          v.addEventListener('seeked', r, { once: true })
+          setTimeout(r, 3000)
+        })
+        v.currentTime = 0
+        await seeked
+      }
       try {
         await v.play()
       } catch (e) {

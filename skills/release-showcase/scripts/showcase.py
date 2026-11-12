@@ -381,9 +381,13 @@ TYPE_RE = re.compile(r"^(\w+)(?:\(([^)]*)\))?!?:\s*(.+)$")
 SKIP_RE = re.compile(r"^(Merge |release|sync|Release )", re.IGNORECASE)
 
 
-def pr_numbers(cfg: Config, ref: str) -> set[str]:
+def pr_numbers(cfg: Config, ref: str, last_only: bool = False) -> set[str]:
+    """`ref` 히스토리 제목의 `(#N)`. `last_only`면 squash 제목마다 끝 번호(PR 자신)만 센다."""
     subjects = str(git(cfg.root, "log", "--format=%s", ref))
-    return set(PR_RE.findall(subjects)) | set(re.findall(r"^Merge pull request #(\d+)", subjects, re.M))
+    merged = set(re.findall(r"^Merge pull request #(\d+)", subjects, re.M))
+    if last_only:
+        return {n for s in subjects.splitlines() for n in PR_RE.findall(s)[-1:]} | merged
+    return set(PR_RE.findall(subjects)) | merged
 
 
 def collect_changes(cfg: Config, app: App, tag: str, base: str) -> list[dict]:
@@ -395,7 +399,7 @@ def collect_changes(cfg: Config, app: App, tag: str, base: str) -> list[dict]:
     - 동기화·릴리스 PR을 squash로 넣었으면(`release…` 커밋) 본문의 `* 제목 (#N)` 줄이 실제 변경이다. 그
       커밋은 경로로 가를 수 없으니 scope가 이 앱 것인 줄만 담는다.
     """
-    released = pr_numbers(cfg, base)
+    released, released_refs = pr_numbers(cfg, base, last_only=True), pr_numbers(cfg, base)
     paths = ["--", app.source_dir] if app.source_dir else []
     raw = str(git(cfg.root, "log", "--format=%h%x1f%cs%x1f%s%x1f%b%x1e", f"{base}..{tag}", *paths))
     entries: list[tuple[str, str, str, list[str], bool]] = []
@@ -411,9 +415,15 @@ def collect_changes(cfg: Config, app: App, tag: str, base: str) -> list[dict]:
                         if ln.startswith("* ") and PR_RE.search(ln)]
         elif not subject.startswith("Merge "):
             entries.append((sha, day, subject, PR_RE.findall(subject), False))
-    changes, seen = [], set(released)
-    for sha, day, subject, prs, bundled in entries:
-        if SKIP_RE.match(subject) or (not prs and not cfg.include_direct_commits) or any(p in seen for p in prs):
+    # 제목 끝의 `(#N)`이 그 PR이다. 앞의 `(#N)`은 이슈 참조이거나 cherry-pick·forward-port한 원래 PR이라
+    # 링크·PR 본문 조회에는 쓰지 않고 중복 판정에만 쓴다.
+    changes, seen, seen_refs = [], set(released), set(released_refs)
+    for sha, day, subject, refs, bundled in entries:
+        prs, earlier = refs[-1:], refs[:-1]
+        if SKIP_RE.match(subject) or (not prs and not cfg.include_direct_commits):
+            continue
+        # 이미 나온 번호(되돌린 PR, 릴리스 본문의 브랜치 커밋 줄)거나 이미 나간 PR을 옮겨 온 줄이면 뺀다
+        if any(p in seen_refs for p in prs) or any(p in seen for p in earlier):
             continue
         m = TYPE_RE.match(subject)
         kind, scope, text = (m.group(1), m.group(2) or "", m.group(3)) if m else ("other", "", subject)
@@ -421,6 +431,7 @@ def collect_changes(cfg: Config, app: App, tag: str, base: str) -> list[dict]:
         if bundled and not ours:
             continue
         seen.update(prs)
+        seen_refs.update(refs)
         text = PR_RE.sub("", text).strip()
         group = kind if kind in ("feat", "fix") else "other"
         if scope and not ours:
