@@ -130,7 +130,7 @@ npx skills add douinc/agent-skills \
 
 | 스킬 | 설명 | 설치 |
 | ---- | ---- | ---- |
-| [langfuse-laravel-ai](./skills/langfuse-laravel-ai/) | `laravel/ai` SDK를 쓰는 Laravel 앱에 Langfuse 트레이싱 연결. `axyr/laravel-langfuse` 자동계측 + trace 컨텍스트(session/user/메타데이터) 보강 | `npx skills add douinc/agent-skills@langfuse-laravel-ai` |
+| [langfuse-laravel-ai](./skills/langfuse-laravel-ai/) | `laravel/ai` SDK를 쓰는 Laravel 앱에 Langfuse 트레이싱 연결. `initred/laravel-langfuse` 자동계측 + trace 컨텍스트(session/user/메타데이터) 보강 | `npx skills add douinc/agent-skills@langfuse-laravel-ai` |
 
 ## 새 스킬 만들기 / Contributing
 
