@@ -106,6 +106,13 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/release-showcase"]
+    },
+    {
+      "name": "recording-share-html",
+      "description": "회의·미팅 녹음의 STT 전사를 핵심·결정·할 일·숫자와 원문 전사 탭이 있는 파일 하나짜리 HTML 회의록으로 정리한다",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/recording-share-html"]
     }
   ]
 }
