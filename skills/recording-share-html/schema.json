@@ -1,0 +1,188 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "one_line",
+    "counterpart",
+    "highlights",
+    "decisions",
+    "action_items",
+    "numbers",
+    "voice",
+    "topics",
+    "open_questions",
+    "caveats",
+    "meeting_type",
+    "organizations",
+    "keywords",
+    "diagrams"
+  ],
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "one_line": {
+      "type": "string"
+    },
+    "counterpart": {
+      "type": "string"
+    },
+    "highlights": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "action_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "who",
+          "what",
+          "due"
+        ],
+        "properties": {
+          "who": {
+            "type": "string"
+          },
+          "what": {
+            "type": "string"
+          },
+          "due": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "numbers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "value"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "voice": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "heading",
+          "points"
+        ],
+        "properties": {
+          "heading": {
+            "type": "string"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "caveats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "meeting_type": {
+      "type": "string",
+      "enum": [
+        "영업·고객 미팅",
+        "협력사 회의",
+        "투자 미팅",
+        "고객 문의·지원",
+        "제품 시연·교육",
+        "세미나·강연",
+        "내부 회의",
+        "업무 메모",
+        "기타"
+      ]
+    },
+    "organizations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "diagrams": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "purpose",
+          "spec"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "workflow",
+              "sequence",
+              "timeline",
+              "architecture",
+              "dataflow",
+              "lifecycle",
+              "tree"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "spec": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
