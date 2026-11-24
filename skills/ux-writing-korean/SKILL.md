@@ -2,7 +2,7 @@
 name: ux-writing-korean
 description: 한국어로 UI/UX 문구를 작성하거나 검수할 때 사용합니다. 해요체, 능동형, 긍정형, 캐주얼 경어, 명사 조합 회피 등 5가지 핵심 원칙과 예외 규칙을 적용합니다.
 metadata:
-  author: initred
+  author: initred@dou.so
   email: initred@dou.so
   version: "1.0.0"
 ---

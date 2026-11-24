@@ -2,7 +2,7 @@
 name: figma-icons-iconify
 description: Use when working with Figma and UI icons are needed — triggers on icon names, icon libraries (Tabler, Lucide, Material Design, Phosphor, Heroicons), or requests to add/insert icons in Figma designs.
 metadata:
-  author: initred
+  author: initred@dou.so
   email: initred@dou.so
   version: "1.0.0"
 ---

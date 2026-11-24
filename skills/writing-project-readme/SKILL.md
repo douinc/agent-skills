@@ -2,7 +2,7 @@
 name: writing-project-readme
 description: Use when explicitly invoked to write or fully rewrite a project README that must cover tech stack, architecture, features, and service description in a single document — readable by non-engineers (PM, design, ops, domain experts) as well as developers. Triggers on requests like "write the README", "redo README.md based on the whole project", "make a comprehensive README everyone can understand". Skip for one-section edits, badge tweaks, or generating a CHANGELOG.
 metadata:
-  author: initred
+  author: initred@dou.so
   email: initred@dou.so
   version: "0.1.0-alpha"
 ---

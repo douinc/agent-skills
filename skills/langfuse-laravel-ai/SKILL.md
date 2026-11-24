@@ -2,7 +2,7 @@
 name: langfuse-laravel-ai
 description: "Use when adding Langfuse tracing/observability to a Laravel app that uses the laravel/ai SDK (Laravel\\Ai\\ namespace, Agent classes, ->prompt()/->stream(), tools, conversations). Activate when the user wants to trace LLM/agent calls, token usage, or tool invocations to Langfuse in a Laravel project, pairs Langfuse with laravel/ai, or asks why traces aren't showing up. Laravel/PHP-specific: laravel/ai has no OpenTelemetry support and there is no first-party PHP Langfuse SDK, so the integration path is non-obvious."
 metadata:
-  author: initred
+  author: initred@dou.so
   email: initred@dou.so
   version: "2.0.0"
 ---

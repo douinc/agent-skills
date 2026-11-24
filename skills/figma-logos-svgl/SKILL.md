@@ -2,7 +2,7 @@
 name: figma-logos-svgl
 description: Use when working with Figma and brand or product logos are needed — triggers on brand names (React, Next.js, Vercel, Stripe, GitHub), company logos, or requests to add/insert logos in Figma designs.
 metadata:
-  author: initred
+  author: initred@dou.so
   email: initred@dou.so
   version: "1.0.0"
 ---

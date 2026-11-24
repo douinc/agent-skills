@@ -146,7 +146,7 @@ npx skills add douinc/agent-skills \
 name: skill-name
 description: 스킬 설명과 언제 사용하는지 작성합니다.
 metadata:
-  author: your-name
+  author: your-email@dou.so
   version: "1.0.0"
 ---
 

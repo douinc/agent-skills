@@ -2,7 +2,7 @@
 name: recording-share-html
 description: "회의·미팅 녹음의 STT 전사(영업·고객 미팅, 협력사·투자자 회의, 내부 회의, 세미나, 업무 메모)를 그 자리에 없던 팀원이 바로 읽을 HTML 회의록 한 장으로 정리한다. 핵심·결정·할 일·숫자·상대 반응·주제별 내용과 원문 전사 탭(찾기·화자 거르기)이 들어간다. '회의록 정리해 줘', '녹음 정리해서 팀에 공유', '미팅 녹음 HTML로', '전사 요약 문서', 'meeting minutes from transcript' 같은 요청에 쓴다. 환자 진료처럼 개인 민감 정보가 중심인 녹음에는 쓰지 않는다."
 metadata:
-  author: develinu
+  author: iw@dou.so
   version: "1.0.0"
 ---
 

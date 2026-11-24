@@ -2,7 +2,7 @@
 name: design-md-to-shadcn
 description: "Applies an external DESIGN.md (Google Labs design-token format) to a project's shadcn/ui theme. Activate when the user provides or references a DESIGN.md / design.md file, a designmd.app or Stitch design system, a downloaded brand design system, or asks to 'apply a design system / theme' to a shadcn project. Translates DESIGN.md tokens into shadcn CSS variables in the project's theme CSS file and turns the prose into component guidance. Inbound-only: does not extract a DESIGN.md from the project."
 metadata:
-  author: initred
+  author: initred@dou.so
   email: initred@dou.so
   version: "1.0.0"
 ---

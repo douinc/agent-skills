@@ -2,7 +2,7 @@
 name: public-sector-rfp-authoring
 description: "Use when drafting or revising Korean government or local-government bid notices, requests for proposals, statements of work, or public-sector service/project specifications from the ordering agency's perspective."
 metadata:
-  author: Hermes Agent
+  author: d@dou.so
   version: "1.0.0"
 ---
 

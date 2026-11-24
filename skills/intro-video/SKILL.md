@@ -2,7 +2,7 @@
 name: intro-video
 description: "회사·제품·서비스·기능 소개 영상을 HyperFrames(HTML→MP4)로 만든다. HyperFrames 공식 워크플로 위에 브리프 계약(하는 일과 가치), 브랜드 토큰, 사실만 쓰는 한국어 카피, OpenRouter 한국어 내레이션·자막·생성 소스, ElevenLabs 효과음·배경음악(선택), 스틸 검수와 렌더 승인 게이트를 씌운다. '회사 소개 영상', '제품 소개 영상', '앱 소개 영상', '서비스·기능 소개 영상', '홍보 영상', '런칭 영상', '브랜드 필름', '모션 그래픽 인트로', '로고 스팅', '쇼릴', 'intro video', 'promo video', 'launch video', 'explainer', 'motion graphics'처럼 소개·홍보 영상을 새로 만들거나 고칠 때 반드시 사용한다. 내레이션 없는 15–40초 모션 그래픽과 한국어 내레이션이 있는 30–90초 소개 영상을 모두 다룬다. HyperFrames의 /hyperframes 인터뷰보다 먼저 쓴다. 이 스킬이 브리프를 BRIEF.md로 넘기면 해당 워크플로가 질문 없이 이어 간다. 실사 촬영 편집, 토킹헤드 자막, 기존 영상 컷 편집, 웹페이지용 CSS 애니메이션에는 쓰지 않는다."
 metadata:
-  author: initred
+  author: initred@dou.so
   email: initred@dou.so
   version: "1.1.0"
 ---

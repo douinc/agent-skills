@@ -2,7 +2,7 @@
 name: onboarding-design
 description: Use when designing, reviewing, or auditing signup flows, goal-selection quizzes, permission prompts, paywalls, or any screen a user sees before their first meaningful action.
 metadata:
-  author: jay
+  author: jay@dou.so
   email: jay@dou.so
   version: "1.0.0"
 ---
