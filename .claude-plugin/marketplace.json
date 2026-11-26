@@ -108,6 +108,13 @@
       "skills": ["./skills/release-showcase"]
     },
     {
+      "name": "release-notes",
+      "description": "정식 릴리스 태그 사이의 변경을 PR 본문까지 읽어 사용자가 겪는 변화 단위의 고정 양식 릴리스 노트로 쓰고, 기계 검사를 거쳐 GitHub Release 본문에 올린다",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/release-notes"]
+    },
+    {
       "name": "recording-share-html",
       "description": "회의·미팅 녹음의 STT 전사를 핵심·결정·할 일·숫자와 원문 전사 탭이 있는 파일 하나짜리 HTML 회의록으로 정리한다",
       "source": "./",
