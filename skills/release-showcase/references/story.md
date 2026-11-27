@@ -7,6 +7,8 @@
 ```jsonc
 {
   "app": "web",                       // config apps의 키
+  "kind": "release",                  // (선택) "preview"면 출시 전 작업 미리 보기 — tag는 브랜치, base는 갈라져 나온 브랜치
+  "alsoRefs": [],                     // (선택, preview만) 같은 작업의 다른 브랜치 — 변경 목록에 함께 싣는다
   "tag": "web-v2.4.0",                // 이번 정식 태그
   "base": "web-v2.3.2",               // 사용자가 직전에 쓰던 정식 태그
   "versionLabel": "2.4.0",            // 화면에 보일 버전 (기본: 태그에서 접두사를 뺀 값)
@@ -70,7 +72,7 @@
 | `compare` | 이전·이후 비교 (나란히·한쪽 보기 토글) | `before`, `after`(각각 그림, `label`로 버전 표시를 바꿀 수 있음), `caption` |
 | `steps` | 흐름을 단계별로 넘겨 보기 | `items: [{ label, title, caption, …그림 }]` |
 | `tabs` | 같은 화면의 상태별 모습 | `items: [{ label, caption, …그림 }]` |
-| `video` | 녹화 영상 + 챕터. 멈춘 채로 시작한다 | `clip`(clips.json id 또는 `.media/<id>.webm`), `poster`(틀기 전에 보일 그림 — 없으면 영상 첫 장면) |
+| `video` | 녹화 영상 + 챕터. 멈춘 채로 시작한다 | `clip`(clips.json id 또는 `.media/<id>.webm`), `poster`(틀기 전에 보일 그림 — 없으면 영상 첫 장면), `sound: true`(내레이션처럼 들어야 하는 소리가 있을 때만 — 없으면 소리를 끈 채로 싣는다) |
 | `flow` | 이전·이후 절차 비교 흐름도 | `lanes: [{ title, tone: bad\|good, steps: [{ text, tone: pain\|win\|skip }] }]`, `caption` |
 | `stack` | 위 블록 여러 개를 세로로 | `items: [media…]` |
 

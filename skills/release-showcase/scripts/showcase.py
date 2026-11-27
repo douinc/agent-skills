@@ -390,7 +390,45 @@ def pr_numbers(cfg: Config, ref: str, last_only: bool = False) -> set[str]:
     return set(PR_RE.findall(subjects)) | merged
 
 
-def collect_changes(cfg: Config, app: App, tag: str, base: str) -> list[dict]:
+def is_preview(story: dict) -> bool:
+    """출시 전 작업(브랜치)을 미리 보여 주는 문서인지 — 정식 릴리스 문서와 범위·문구가 다르다."""
+    return story.get("kind", "release") == "preview"
+
+
+def fork_point(cfg: Config, base: str, ref: str) -> str:
+    """ref가 base에서 갈라진 커밋. 로컬 base가 원격보다 뒤처져 있으면 그사이 남의 변경이 범위에 섞이므로
+    로컬·원격 추적 브랜치 가운데 ref에 더 가까운 쪽(갈라진 뒤 커밋이 적은 쪽)을 고른다."""
+    best: tuple[int, str] | None = None
+    for cand in (base, f"origin/{base}"):
+        if not ref_exists(cfg, cand):
+            continue
+        mb = str(git(cfg.root, "merge-base", cand, ref, check=False)).strip()
+        if not mb:
+            continue
+        n = int(str(git(cfg.root, "rev-list", "--count", f"{mb}..{ref}")).strip())
+        if best is None or n < best[0]:
+            best = (n, mb)
+    if best is None:
+        raise SystemExit(f"{base}와 {ref}가 갈라진 자리를 찾지 못했어요 — story.json의 base를 확인해요")
+    return best[1]
+
+
+def story_changes(cfg: Config, app: App, story: dict) -> list[dict]:
+    """문서 종류에 맞는 변경 목록. 릴리스는 직전 정식 버전에 없던 변경, 미리 보기는 이 작업이 바꾼 것만."""
+    if not is_preview(story):
+        return collect_changes(cfg, app, story["tag"], story["base"])
+    out: list[dict] = []
+    seen: set[str] = set()
+    for ref in [story["tag"], *story.get("alsoRefs", [])]:
+        for c in collect_changes(cfg, app, ref, fork_point(cfg, story["base"], ref), own_work=True):
+            if c["sha"] not in seen:
+                seen.add(c["sha"])
+                # 서버·앱이 한 목록에 섞이니 어느 쪽을 바꿨는지 앞에 적는다
+                out.append({**c, "text": f"{c['scope']} · {c['text']}"} if c["scope"] else c)
+    return out
+
+
+def collect_changes(cfg: Config, app: App, tag: str, base: str, own_work: bool = False) -> list[dict]:
     """base 히스토리에 없던 PR만 — 태그끼리 조상 관계가 아니어도 맞는다.
 
     - `base..tag`는 브랜치가 갈라져 있으면 base에 cherry-pick으로 이미 들어간 PR까지 담으므로 PR 번호로
@@ -398,9 +436,11 @@ def collect_changes(cfg: Config, app: App, tag: str, base: str) -> list[dict]:
     - squash 머지는 제목의 `(#N)`, merge 커밋 머지는 `Merge pull request #N`과 본문 첫 줄(PR 제목)을 쓴다.
     - 동기화·릴리스 PR을 squash로 넣었으면(`release…` 커밋) 본문의 `* 제목 (#N)` 줄이 실제 변경이다. 그
       커밋은 경로로 가를 수 없으니 scope가 이 앱 것인 줄만 담는다.
+    - own_work(미리 보기): base는 갈라진 커밋이다. 아직 PR이 없는 커밋도 담고, 한 작업이 서버·앱을 함께
+      바꾸므로 앱 경로·범위로 거르지 않는다.
     """
     released, released_refs = pr_numbers(cfg, base, last_only=True), pr_numbers(cfg, base)
-    paths = ["--", app.source_dir] if app.source_dir else []
+    paths = ["--", app.source_dir] if app.source_dir and not own_work else []
     raw = str(git(cfg.root, "log", "--format=%h%x1f%cs%x1f%s%x1f%b%x1e", f"{base}..{tag}", *paths))
     entries: list[tuple[str, str, str, list[str], bool]] = []
     for record in raw.split("\x1e"):
@@ -420,14 +460,14 @@ def collect_changes(cfg: Config, app: App, tag: str, base: str) -> list[dict]:
     changes, seen, seen_refs = [], set(released), set(released_refs)
     for sha, day, subject, refs, bundled in entries:
         prs, earlier = refs[-1:], refs[:-1]
-        if SKIP_RE.match(subject) or (not prs and not cfg.include_direct_commits):
+        if SKIP_RE.match(subject) or (not prs and not (cfg.include_direct_commits or own_work)):
             continue
         # 이미 나온 번호(되돌린 PR, 릴리스 본문의 브랜치 커밋 줄)거나 이미 나간 PR을 옮겨 온 줄이면 뺀다
         if any(p in seen_refs for p in prs) or any(p in seen for p in earlier):
             continue
         m = TYPE_RE.match(subject)
         kind, scope, text = (m.group(1), m.group(2) or "", m.group(3)) if m else ("other", "", subject)
-        ours = not app.ship_scopes or any(k in scope for k in app.ship_scopes)
+        ours = own_work or not app.ship_scopes or any(k in scope for k in app.ship_scopes)
         if bundled and not ours:
             continue
         seen.update(prs)
@@ -545,6 +585,7 @@ class Renderer:
         # poster를 따로 주지 않으면 영상 첫 장면을 쓴다 — 저절로 틀지 않으니 멈춘 채로도 무엇이 나올지 보여야 한다
         poster_uri = self.media.image(m["poster"]) if m.get("poster") else self.media.clip_poster(m["clip"])
         poster = f' poster="{poster_uri}"' if poster_uri else ""
+        muted = "" if m.get("sound") else " muted"  # 내레이션이 든 영상만 소리를 살린다(저절로 틀지는 않는다)
         chap = "".join(
             f'<li><button type="button" data-t="{c["t"]:.2f}"><time>{int(c["t"]) // 60}:{int(c["t"]) % 60:02d}</time>'
             f"<span>{self.inline(c['caption'])}</span></button></li>"
@@ -553,7 +594,7 @@ class Renderer:
         return f"""
 <div class="video" data-video>
   <div class="window video-frame">
-    <video{poster} muted playsinline preload="auto" controls data-type="{mime}"></video>
+    <video{poster}{muted} playsinline preload="auto" controls data-type="{mime}"></video>
     <script type="application/octet-stream" class="clip-data">{b64}</script>
     <button type="button" class="play" aria-label="재생">▶</button>
   </div>
@@ -614,6 +655,10 @@ class Renderer:
                 f'<div class="mini-grid">{cards}</div></section>')
 
     def changes(self, changes: list[dict]) -> str:
+        preview = is_preview(self.story)
+        title = "이 작업의 변경 목록" if preview else "전체 변경 목록"
+        hint = ("이 작업에서 바꾼 것만 모았어요. 아직 출시 전이라 정식 버전에는 들어 있지 않아요." if preview
+                else "직전 정식 버전에 없던 변경만 모았어요. 버전 올리기 커밋은 뺐어요.")
         counts = {g: sum(1 for c in changes if c["group"] == g) for g, _ in CHANGE_GROUPS}
         chips = "".join(f'<button type="button" class="chip on" data-group="{g}">{label} <b>{counts[g]}</b></button>'
                         for g, label in CHANGE_GROUPS)
@@ -625,8 +670,8 @@ class Renderer:
 
         return f"""
 <section class="changes" id="changes">
-  <h2 class="sec">전체 변경 목록 <small>{len(changes)}건</small></h2>
-  <p class="hint">직전 정식 버전에 없던 변경만 모았어요. 버전 올리기 커밋은 뺐어요.</p>
+  <h2 class="sec">{title} <small>{len(changes)}건</small></h2>
+  <p class="hint">{hint}</p>
   <div class="change-tools">{chips}<input type="search" placeholder="찾기" aria-label="변경 목록 찾기"></div>
   <ul class="change-list">{"".join(row(c) for c in changes)}</ul>
 </section>"""
@@ -669,8 +714,9 @@ def build(cfg: Config, story_dir: Path, out: Path, record: bool) -> Path:
     media = Media(cfg, app, refs, story_dir)
     r = Renderer(cfg, story, media, labels)
     ink = r.inline
-    changes = collect_changes(cfg, app, tag, base)
-    url, assets = release_assets(cfg, tag)
+    preview = is_preview(story)
+    changes = story_changes(cfg, app, story)
+    url, assets = ("", []) if preview else release_assets(cfg, tag)
     icon = ""
     if app.icon:
         icon = f'<img src="{media.image({"file": app.icon})}" alt="">'
@@ -680,19 +726,20 @@ def build(cfg: Config, story_dir: Path, out: Path, record: bool) -> Path:
     downloads = r.downloads(url, assets)
     toc = "".join(f'<a href="#{html.escape(h["id"])}">{ink(h.get("short", h["title"]))}</a>' for h in story["highlights"])
     toc += '<a href="#more">그 밖에</a>' if story.get("minor") else ""
-    toc += '<a href="#changes">전체 변경</a>' + ('<a href="#download">설치</a>' if downloads else "")
+    toc += f'<a href="#changes">{"이 작업의 변경" if preview else "전체 변경"}</a>' + ('<a href="#download">설치</a>' if downloads else "")
     notes = "".join(f'<details class="note"><summary>{ink(n["title"])}</summary>'
                     + "".join(f"<p>{ink(p)}</p>" for p in n["body"]) + "</details>" for n in story.get("notes", []))
     body = {
         "TITLE": html.escape(story["title"]), "ICON": icon, "APP": html.escape(app.label),
-        "VERSION": html.escape(labels["tag"]), "DATE": html.escape(story["date"]),
+        "VERSION": html.escape(labels["tag"]), "DATE": html.escape(story["date"]) + (" 기준 · 출시 전" if preview else " 출시"),
         "CHANNEL": html.escape(story.get("channel", "production")), "TAGLINE": ink(story["tagline"]),
         "CONTEXT": ink(story.get("context", "")), "METRICS": metrics, "AUDIENCE": audience, "TOC": toc,
         "HIGHLIGHTS": "".join(r.highlight(i + 1, h) for i, h in enumerate(story["highlights"])),
         "MINOR": r.minor(story["minor"]) if story.get("minor") else "",
         "NOTES": f'<section class="notes" id="notes"><h2 class="sec">팀 참고</h2>{notes}</section>' if notes else "",
         "CHANGES": r.changes(changes), "DOWNLOADS": downloads,
-        "FOOTER": ink(f"{base} → {tag} · 화면은 저장소에 커밋된 스크린샷과 녹화예요"),
+        "FOOTER": ink(f"{base}에서 갈라진 {tag} · 출시 전 작업이에요" if preview
+                      else f"{base} → {tag} · 화면은 저장소에 커밋된 스크린샷과 녹화예요"),
         "FRAME_W": str(cfg.frame_width), "VIDEO_W": str(cfg.video_width), "BRAND": cfg.brand, "BRAND_2": blend(cfg.brand, 0.18), "BRAND_SOFT": blend(cfg.brand, 0.9),
     }
     page = TEMPLATE.read_text()
@@ -800,9 +847,18 @@ class Checker:
         if self.app is None:
             r.error("app", f"설정의 apps 중 하나여야 해요: {sorted(self.cfg.apps)} (지금 {s.get('app')!r})")
             return r
+        if s.get("kind", "release") not in ("release", "preview"):
+            r.error("kind", "kind는 release(정식 릴리스) 또는 preview(출시 전 작업 미리 보기)")
         for key in ("tag", "base"):
             if s.get(key) and not ref_exists(self.cfg, s[key]):
                 r.error(key, f"태그 {s[key]}가 없어요 — `git fetch --tags`")
+        for ref in s.get("alsoRefs", []):
+            if not ref_exists(self.cfg, ref):
+                r.error("alsoRefs", f"{ref}가 없어요")
+        if s.get("alsoRefs") and not is_preview(s):
+            r.error("alsoRefs", "alsoRefs는 kind가 preview일 때만 써요")
+        if is_preview(s) and not r.errors and not story_changes(self.cfg, self.app, s):
+            r.warn("범위", f"{s['base']}에서 갈라진 뒤의 커밋이 없어요 — tag(브랜치)와 base를 확인해요")
         if re.search(r"staging|beta|rc|alpha|nightly", s.get("base", ""), re.I):
             r.error("base", "사전 배포 태그는 기준이 될 수 없어요 — 사용자가 직전에 쓰던 정식 태그를 넣어요")
         if r.errors:
@@ -879,7 +935,7 @@ class Checker:
                 r.error(hid, "시각 자료(media)가 없어요 — 하이라이트마다 하나는 있어야 해요")
             if not h.get("how") and tone in ("new", "better"):
                 r.warn(hid, "`how`(따라 할 순서·알아 둘 점)가 없어요")
-            if not h.get("prs") and self.cfg.repo:
+            if not h.get("prs") and self.cfg.repo and not is_preview(self.story):
                 r.warn(hid, "관련 PR이 없어요")
             sentences = [x for x in re.split(r"(?<=[.!?])\s+", plain(h.get("lead", ""))) if x]
             if len(sentences) > 3:
@@ -968,8 +1024,8 @@ class Checker:
 
     def check_prs(self) -> None:
         """하이라이트에 단 PR이 태그에 실제로 들어 있는지 — 머지됐지만 아직 안 나간 기능을 막는다."""
-        if not self.cfg.repo:
-            return
+        if not self.cfg.repo or is_preview(self.story):
+            return  # 미리 보기는 아직 PR이 없는 작업이라 PR 대조를 하지 않는다
         in_tag, in_base = pr_numbers(self.cfg, self.refs["tag"]), pr_numbers(self.cfg, self.refs["base"])
         cited: set[str] = set()
         for h in self.story.get("highlights", []):
@@ -1058,12 +1114,19 @@ def pr_brief(cfg: Config, number: str) -> str:
     return body[:700] + ("…" if len(body) > 700 else "")
 
 
-def init(cfg: Config, tag: str, base: str | None, force: bool) -> None:
-    app = app_for_tag(cfg, tag)
-    why = [f"--base로 {base}를 지정"] if base else []
-    if base is None:
-        base, why = suggest_base(cfg, app, tag)
-    story_dir = cfg.stories_dir / tag
+def init(cfg: Config, tag: str, base: str | None, force: bool, preview: bool = False, app_key: str | None = None) -> None:
+    if preview:
+        if app_key is None and len(cfg.apps) > 1:
+            raise SystemExit(f"--app으로 주인공 앱을 골라요: {sorted(cfg.apps)}")
+        app = cfg.apps[app_key or next(iter(cfg.apps))]
+        base = base or "main"
+        why = [f"출시 전 작업 미리 보기 — {base}에서 갈라진 뒤 {tag}가 바꾼 것만 범위로 씀"]
+    else:
+        app = app_for_tag(cfg, tag)
+        why = [f"--base로 {base}를 지정"] if base else []
+        if base is None:
+            base, why = suggest_base(cfg, app, tag)
+    story_dir = cfg.stories_dir / (tag.rsplit("/", 1)[-1] if preview else tag)
     story_path = story_dir / "story.json"
     if story_path.exists() and not force:
         raise SystemExit(f"{story_path}가 이미 있어요 — 덮어쓰려면 --force")
@@ -1087,11 +1150,17 @@ def init(cfg: Config, tag: str, base: str | None, force: bool) -> None:
             "TODO: 화면 속 자료가 실제 사례(식별 정보 가림)인지, 테스트 데이터인지 적어요.", *cfg.notes]}],
         "downloadNote": "",
     }
+    if preview:
+        story.update({"kind": "preview", "title": f"{app.label} — {todo}: 이 작업이 바꾸는 것", "channel": "개발 중",
+                      "versionLabel": todo, "baseLabel": "지금",
+                      "context": "아직 출시 전인 작업이에요. 출시되면 달라질 점을 미리 정리했어요."})
     story_path.write_text(json.dumps(story, ensure_ascii=False, indent=2) + "\n")
     if app.record and not (story_dir / "clips.json").exists():
         (story_dir / "clips.json").write_text("[]\n")
 
-    changes = collect_changes(cfg, app, tag, base)
+    changes = story_changes(cfg, app, story)
+    if preview:
+        base = fork_point(cfg, base, tag)  # 화면 후보도 갈라진 자리와 견준다
     lines = [f"# {tag} 재료 묶음", "", "`showcase.py init`이 만든 작업 메모예요(커밋하지 않음).", "", "## 범위", "",
              *[f"- {w}" for w in why],
              f"- 변경 {len(changes)}건: " + ", ".join(f"{label} {sum(c['group'] == g for c in changes)}"
@@ -1127,6 +1196,8 @@ def main() -> int:
     p.add_argument("tag")
     p.add_argument("--base", help="기준 태그 (기본: 사용자가 머물던 직전 정식 태그)")
     p.add_argument("--force", action="store_true")
+    p.add_argument("--preview", action="store_true", help="출시 전 작업(브랜치) 미리 보기 — tag 자리에 브랜치, 기준은 --base(기본 main)")
+    p.add_argument("--app", help="--preview에서 주인공 앱(설정의 apps 키)")
     for name, text in (("goldens", "이전·이후 사이에 생기거나 바뀐 스크린샷"), ("check", "글·자료 검사"),
                        ("verify", "만들어 둔 HTML을 데스크톱·모바일 폭으로 검수")):
         sub.add_parser(name, help=text).add_argument("target", help="태그 또는 story 폴더")
@@ -1139,13 +1210,14 @@ def main() -> int:
     sys.stdout.reconfigure(line_buffering=True)  # 하위 프로세스 출력과 순서가 섞이지 않게
     cfg = load_config()
     if a.cmd == "init":
-        init(cfg, a.tag, a.base, a.force)
+        init(cfg, a.tag, a.base, a.force, a.preview, a.app)
         return 0
     story_dir = story_dir_for(cfg, a.target)
     out = (getattr(a, "out", None) or story_dir / f"{story_dir.name}.html").resolve()
     if a.cmd == "goldens":
         story = load_story(story_dir)
-        for status, name in golden_diff(cfg, cfg.apps[story["app"]], story["base"], story["tag"]):
+        gbase = fork_point(cfg, story["base"], story["tag"]) if is_preview(story) else story["base"]
+        for status, name in golden_diff(cfg, cfg.apps[story["app"]], gbase, story["tag"]):
             print(f"{status:6} {name}")
         return 0
     if a.cmd == "verify":
