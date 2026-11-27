@@ -7,6 +7,7 @@
   notes.py publish <태그> [--dry-run]              검사 → Release 본문 교체(없으면 만들기)
   notes.py link <태그> <주소>                      쇼케이스 링크를 노트 둘째 줄에 넣기
   notes.py audit [--limit N]                       이미 나간 정식 릴리스 노트 점검
+  notes.py check-test <파일> [--limit N]           테스트 채널 노트(버전별 칸) 검사, --limit: 맨 위 칸 글자 수 상한
 
 설정은 release-showcase와 같은 `.release-showcase/config.json`을 읽는다(없으면 앱 하나·접두사 v).
 범위·변경 수집 규칙은 release-showcase의 showcase.py와 같다(기준 태그만 다르다 — 노트는 바로 앞 정식 태그).
@@ -39,6 +40,7 @@ SECTIONS = ["새 기능", "달라진 점", "고친 것", "올릴 때 할 일", "
 REQUIRED = ["올릴 때 할 일", "범위"]
 CHANGE_SECTIONS = ["새 기능", "달라진 점", "고친 것"]
 PLACEHOLDER_RE = re.compile(r"TODO|TBD|여기에|<[^>\n]*적는다[^>\n]*>")
+TEST_HEAD_RE = re.compile(r"^\[([^\]\s]+)\]$")  # 테스트 채널 노트의 칸 머리: [2.2.3+199]
 GROUP_LABEL = {"feat": "새 기능·바뀐 동작", "fix": "고친 것", "other": "내부 정리"}
 
 
@@ -393,6 +395,59 @@ def cmd_check(cfg: Config, tag: str, quiet: bool = False) -> Report:
     return rep
 
 
+def version_key(label: str) -> tuple[int, ...]:
+    return tuple(int(x) for x in re.findall(r"\d+", label))
+
+
+def cmd_check_test(cfg: Config, path: Path, limit: int | None) -> Report:
+    """테스트 채널 노트 — 마지막 정식 릴리스 이후 누적, 테스트 빌드 버전별 칸, 최신 칸이 맨 위."""
+    rep = Report()
+    if not path.exists():
+        raise SystemExit(f"파일이 없어요: {path}")
+    text = path.read_text()
+    if not text.strip():
+        rep.info.append("비어 있어요 — 정식 승격 직후 상태예요. 다음 테스트 빌드 칸부터 쌓아요")
+        rep.show()
+        return rep
+    blocks: list[tuple[str, list[str]]] = []
+    stray: list[str] = []
+    for ln in text.splitlines():
+        s = ln.strip()
+        if m := TEST_HEAD_RE.match(s):
+            blocks.append((m.group(1), []))
+        elif s:
+            (blocks[-1][1] if blocks else stray).append(s)
+    body_checks(rep, cfg, text)
+    if not blocks:
+        rep.errors.append("버전 칸 머리 줄이 없어요 — 테스트 빌드마다 `[2.2.3+199]` 한 줄로 칸을 열어요")
+        rep.show()
+        return rep
+    if stray:
+        rep.errors.append(f"첫 칸 머리 줄 위에 글이 있어요: {stray[0][:50]}")
+    labels = [b[0] for b in blocks]
+    for label in sorted({x for x in labels if labels.count(x) > 1}):
+        rep.errors.append(f"`[{label}]` 칸이 두 번 나와요 — 하나로 합쳐요")
+    keys = [version_key(x) for x in labels]
+    if any(a <= b for a, b in zip(keys, keys[1:])) and len(set(labels)) == len(labels):
+        rep.errors.append("최신 버전 칸이 맨 위가 아니에요: " + " → ".join(f"[{x}]" for x in labels))
+    for label, lines in blocks:
+        if not lines:
+            rep.errors.append(f"`[{label}]` 칸이 비었어요")
+    seen: dict[str, str] = {}
+    for label, lines in blocks:
+        for s in lines:
+            key = re.sub(r"^[-*]\s*", "", s)
+            if key in seen and seen[key] != label:
+                rep.errors.append(f"같은 줄이 `[{seen[key]}]`·`[{label}]` 칸에 함께 있어요 — 한 칸에만 써요: {key[:50]}")
+            seen.setdefault(key, label)
+    top = "\n".join(blocks[0][1])
+    if limit and len(top) > limit:
+        rep.errors.append(f"맨 위 칸 `[{labels[0]}]`이 {len(top)}자 — 상한 {limit}자 채널에 보낼 수 없어요")
+    rep.info.append(f"칸 {len(blocks)}개 · 맨 위 `[{labels[0]}]` {len(top)}자")
+    rep.show()
+    return rep
+
+
 def norm_changes(text: str) -> str:
     """버전·빌드 정보 줄을 뺀 변경 본문 — 복사된 노트를 찾는다."""
     keep = [ln.strip() for ln in text.splitlines()
@@ -524,6 +579,9 @@ def main() -> int:
     p.add_argument("url")
     p = sub.add_parser("audit", help="나간 정식 릴리스 노트 점검")
     p.add_argument("--limit", type=int, default=30)
+    p = sub.add_parser("check-test", help="테스트 채널 노트(버전별 칸) 검사")
+    p.add_argument("file", type=Path)
+    p.add_argument("--limit", type=int, help="맨 위 칸 글자 수 상한(예: Play 변경사항 500)")
     a = ap.parse_args()
     cfg = load_config()
     if a.cmd == "init":
@@ -534,6 +592,8 @@ def main() -> int:
         return cmd_publish(cfg, a.tag, a.dry_run)
     if a.cmd == "link":
         return cmd_link(cfg, a.tag, a.url)
+    if a.cmd == "check-test":
+        return 1 if cmd_check_test(cfg, a.file, a.limit).errors else 0
     return cmd_audit(cfg, a.limit)
 
 
